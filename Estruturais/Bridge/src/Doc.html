@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Bridge — Controle e Dispositivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🌉 Padrão de Projeto: Bridge</h1>
+        <p>Separando o controle do que está sendo controlado 🕹️📺</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Bridge (GOF)</h2>
+        <div class="box">
+            <strong>Bridge</strong> é um padrão de projeto estrutural que separa a abstração da implementação,
+            permitindo que ambos evoluam independentemente.
+        </div>
+
+        <h2>🤔 O que é o Bridge de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem diferentes tipos de <strong>controles remotos</strong> (simples, avançado) e diferentes
+            tipos de <strong>dispositivos</strong> (TV, rádio).<br><br>
+            Ao invés de criar todas as combinações possíveis de controle + dispositivo, o Bridge cria uma ponte entre
+            eles. Assim, você pode conectar qualquer controle a qualquer dispositivo sem depender de uma implementação
+            fixa.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+.
+└── src
+    ├── controles
+    │   ├── ControleAvancado.java
+    │   ├── ControleRemoto.java
+    │   └── ControleSimples.java
+    ├── dispositivos
+    │   ├── Dispositivo.java
+    │   ├── Radio.java
+    │   └── TV.java
+    ├── Doc.html
+    ├── Main.java
+    └── scriptBridge.py
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Dispositivo</h3>
+        <pre><code>public interface Dispositivo {
+    void ligar();
+    void desligar();
+    boolean isLigado();
+}</code></pre>
+
+        <h3>Implementações de Dispositivo</h3>
+        <pre><code>public class TV implements Dispositivo {
+    private boolean ligado = false;
+
+    public void ligar() {
+        ligado = true;
+        System.out.println("TV ligada.");
+    }
+
+    public void desligar() {
+        ligado = false;
+        System.out.println("TV desligada.");
+    }
+
+    public boolean isLigado() {
+        return ligado;
+    }
+}</code></pre>
+
+        <pre><code>public class Radio implements Dispositivo {
+    private boolean ligado = false;
+
+    public void ligar() {
+        ligado = true;
+        System.out.println("Rádio ligado.");
+    }
+
+    public void desligar() {
+        ligado = false;
+        System.out.println("Rádio desligado.");
+    }
+
+    public boolean isLigado() {
+        return ligado;
+    }
+}</code></pre>
+
+        <h3>Abstração: Controle Remoto</h3>
+        <pre><code>public abstract class ControleRemoto {
+    protected Dispositivo dispositivo;
+
+    public ControleRemoto(Dispositivo dispositivo) {
+        this.dispositivo = dispositivo;
+    }
+
+    public abstract void ligar();
+    public abstract void desligar();
+}</code></pre>
+
+        <h3>Refinamentos do Controle</h3>
+
+        <h4>Controle Simples</h4>
+        <pre><code>public class ControleSimples extends ControleRemoto {
+    public ControleSimples(Dispositivo dispositivo) {
+        super(dispositivo);
+    }
+
+    public void ligar() {
+        dispositivo.ligar();
+    }
+
+    public void desligar() {
+        dispositivo.desligar();
+    }
+}</code></pre>
+
+        <h4>Controle Avançado</h4>
+        <pre><code>public class ControleAvancado extends ControleRemoto {
+    public ControleAvancado(Dispositivo dispositivo) {
+        super(dispositivo);
+    }
+
+    public void ligar() {
+        dispositivo.ligar();
+        System.out.println("Controle avançado: dispositivo ligado com recursos extras.");
+    }
+
+    public void desligar() {
+        dispositivo.desligar();
+        System.out.println("Controle avançado: dispositivo desligado com recursos extras.");
+    }
+
+    public void alternar() {
+        if (dispositivo.isLigado()) {
+            desligar();
+        } else {
+            ligar();
+        }
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Dispositivo tv = new TV();
+        Dispositivo radio = new Radio();
+
+        ControleRemoto controleTV = new ControleSimples(tv);
+        ControleRemoto controleRadio = new ControleAvancado(radio);
+
+        System.out.println("--- Controle Simples com TV ---");
+        controleTV.ligar();
+        controleTV.desligar();
+
+        System.out.println("\\n--- Controle Avançado com Rádio ---");
+        controleRadio.ligar();
+        controleRadio.desligar();
+
+        System.out.println("\\n--- Usando alternar no controle avançado ---");
+        ControleAvancado controleAvancadoRadio = new ControleAvancado(radio);
+        controleAvancadoRadio.alternar(); // Liga
+        controleAvancadoRadio.alternar(); // Desliga
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li>
+                    <strong>🔌 Interface Dispositivo:</strong>
+                    Define o que qualquer dispositivo precisa saber fazer: <code>ligar()</code>, <code>desligar()</code>
+                    e <code>isLigado()</code>. Isso permite que todos os dispositivos sigam um padrão comum.
+                </li>
+
+                <li>
+                    <strong>📺 TV e 📻 Rádio:</strong>
+                    São dispositivos concretos que implementam a interface <code>Dispositivo</code>. Cada um tem seu
+                    próprio comportamento para ligar e desligar, mas podem ser controlados da mesma forma.
+                </li>
+
+                <li>
+                    <strong>🕹️ Classe Abstrata ControleRemoto:</strong>
+                    É a <strong>abstração principal</strong> do padrão Bridge. Ela <u>não implementa diretamente um
+                    dispositivo</u>, mas sim
+                    <strong>contém uma referência (composição) para um objeto do tipo <code>Dispositivo</code></strong>.
+
+                    <br>
+                    Isso é o que <strong>tipifica o padrão Bridge</strong>: a abstração (o controle) e a implementação
+                    (o dispositivo)
+                    são separadas em duas hierarquias diferentes que se conectam por meio de uma ponte (daí o nome
+                    "Bridge").
+
+                    <br>
+                    Com isso, podemos criar novos tipos de controles <em>sem alterar os dispositivos</em>, e novos
+                    dispositivos
+                    <em>sem alterar os controles</em>. É uma forma poderosa de promover <strong>independência entre
+                        abstração e implementação</strong>.
+                </li>
+
+                <li>
+                    <strong>🔲 ControleSimples:</strong>
+                    Um controle básico que liga e desliga o dispositivo sem funcionalidades extras. Ele simplesmente
+                    repassa os comandos ao dispositivo conectado.
+                </li>
+
+                <li>
+                    <strong>🧠 ControleAvancado:</strong>
+                    Um controle com comportamento adicional. Além de ligar e desligar, também possui um método
+                    <code>alternar()</code> que liga ou desliga o dispositivo dependendo do estado atual. Exibe
+                    mensagens adicionais ao usuário.
+                </li>
+
+                <li>
+                    <strong>🚀 Classe Main:</strong>
+                    É o ponto de entrada do programa. Aqui é onde:
+                    <ul>
+                        <li>Criamos instâncias de <code>TV</code> e <code>Rádio</code></li>
+                        <li>Conectamos um <code>ControleSimples</code> à TV</li>
+                        <li>Conectamos um <code>ControleAvancado</code> ao Rádio</li>
+                        <li>Demonstramos o uso do padrão Bridge ligando, desligando e alternando dispositivos</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+
+        <h2>✅ Benefícios do Bridge</h2>
+        <div class="box">
+            <ul>
+                <li>Separa a lógica de controle da lógica do dispositivo.</li>
+                <li>Facilita a manutenção e extensão do código.</li>
+                <li>Evita a explosão de classes com todas as combinações possíveis.</li>
+                <li>Permite adicionar novos dispositivos e controles sem afetar os existentes.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode introduzir complexidade desnecessária em projetos simples.</li>
+                <li>💡 A divisão deve ser feita quando há uma real variação tanto na abstração quanto na implementação.
+                </li>
+                <li>🧱 Estrutura excessivamente fragmentada pode dificultar o entendimento inicial.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Bridge</strong> é ideal quando há múltiplas variações em duas dimensões — como tipos de
+            controles e tipos de dispositivos.<br><br>
+            Com ele, evitamos a multiplicação de classes e tornamos o sistema mais flexível e organizado.<br><br>
+            Assim, podemos criar um <strong>Controle Avançado</strong> para uma <strong>TV</strong>, um <strong>Controle
+                Simples</strong> para um <strong>Rádio</strong>, e vice-versa — tudo isso sem mudar a lógica interna de
+            cada classe.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Bridge • 2025</p>
+    </footer>
+</body>
+
+</html>

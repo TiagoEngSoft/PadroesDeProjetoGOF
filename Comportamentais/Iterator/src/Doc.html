@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Padrão Iterator — Playlist de Músicas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0 20px 40px 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #007acc;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1,
+        h2 {
+            margin-top: 1.5em;
+            color: #007acc;
+        }
+
+        .box {
+            background: #e6f0fa;
+            border-left: 6px solid #007acc;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 15px;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🔁 Padrão de Projeto: Iterator</h1>
+        <p>Acesso sequencial a elementos de uma coleção sem expor sua estrutura interna</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Iterator (GOF)</h2>
+        <div class="box">
+            O <strong>Iterator</strong> é um padrão comportamental que permite acessar os elementos de uma coleção
+            sequencialmente sem expor sua estrutura interna.
+        </div>
+
+        <h2>🤔 O que é o Iterator de forma simples?</h2>
+        <div class="box">
+            Imagine uma <strong>playlist de músicas</strong>. Você quer ouvir uma música após a outra, sem se preocupar
+            com como elas estão armazenadas internamente.<br><br>
+            O <strong>Iterator</strong> é o objeto que percorre a playlist, te permitindo ouvir cada música uma a uma,
+            sem precisar saber se elas estão em uma lista, array, ou outro formato.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+IteratorPlaylist/
+└── src/
+    ├── MeuIterator.java         (Interface do Iterator)
+    ├── MinhaPlaylist.java       (Interface da coleção)
+    ├── Musica.java              (Classe Música)
+    ├── Playlist.java            (Implementação da coleção Playlist)
+    └── Main.java                (Classe principal para testar)
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface MeuIterator</h3>
+        <pre><code>public interface MeuIterator&lt;T&gt; {
+    boolean hasNext();
+    T next();
+}</code></pre>
+
+        <h3>Interface MinhaPlaylist</h3>
+        <pre><code>public interface MinhaPlaylist&lt;T&gt; {
+    MeuIterator&lt;T&gt; criarIterator();
+}</code></pre>
+
+        <h3>Classe Musica</h3>
+        <pre><code>public class Musica {
+    private String titulo;
+
+    public Musica(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+}</code></pre>
+
+        <h3>Classe Playlist (Implementação da coleção)</h3>
+        <pre><code>public class Playlist implements MinhaPlaylist&lt;Musica&gt; {
+    private Musica[] musicas;
+    private int cont = 0;
+
+    public Playlist(int tamanho) {
+        musicas = new Musica[tamanho];
+    }
+
+    public void adicionarMusica(Musica musica) {
+        if (cont &lt; musicas.length) {
+            musicas[cont++] = musica;
+        }
+    }
+
+    public MeuIterator&lt;Musica&gt; criarIterator() {
+        return new PlaylistIterator();
+    }
+
+    private class PlaylistIterator implements MeuIterator&lt;Musica&gt; {
+        private int posicaoAtual = 0;
+
+        public boolean hasNext() {
+            return posicaoAtual &lt; cont && musicas[posicaoAtual] != null;
+        }
+
+        public Musica next() {
+            return musicas[posicaoAtual++];
+        }
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Playlist playlist = new Playlist(5);
+        playlist.adicionarMusica(new Musica("Bohemian Rhapsody"));
+        playlist.adicionarMusica(new Musica("Imagine"));
+        playlist.adicionarMusica(new Musica("Hotel California"));
+
+        MeuIterator&lt;Musica&gt; iterator = playlist.criarIterator();
+
+        System.out.println("🎵 Músicas na playlist:");
+        while (iterator.hasNext()) {
+            Musica musica = iterator.next();
+            System.out.println("- " + musica.getTitulo());
+        }
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código</h2>
+        <div class="box">
+            <ul>
+                <li><strong>Interface MeuIterator:</strong> Define métodos para verificar se há próximo elemento e para
+                    obter o próximo.</li>
+                <li><strong>Interface MinhaPlaylist:</strong> Define que a coleção deve retornar um Iterator.</li>
+                <li><strong>Classe Playlist:</strong> Implementa a coleção de músicas, armazenando em array e criando um
+                    iterador interno.</li>
+                <li><strong>Classe PlaylistIterator:</strong> Itera sequencialmente pelas músicas da playlist.</li>
+                <li><strong>Main:</strong> Cria playlist, adiciona músicas e usa o iterator para imprimir cada uma.</li>
+            </ul>
+        </div>
+
+        <h2>🎯 Benefícios do Iterator</h2>
+        <div class="box">
+            <ul>
+                <li>Permite percorrer diferentes coleções de forma uniforme.</li>
+                <li>Esconde detalhes da estrutura interna da coleção.</li>
+                <li>Facilita a implementação de múltiplos tipos de iteração.</li>
+                <li>Separa a responsabilidade entre coleção e iteração.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>Adicionar iteradores pode aumentar a complexidade do código.</li>
+                <li>Iteradores devem ser usados com atenção em coleções mutáveis para evitar inconsistências.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Iterator</strong> é essencial para abstrair o processo de percorrer coleções, facilitando
+            o acesso sequencial sem expor detalhes internos da estrutura de dados.<br><br>
+            No exemplo, a playlist esconde seu array interno e fornece um iterador que permite listar as músicas de
+            forma simples e segura.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Iterator • 2025</p>
+    </footer>
+</body>
+
+</html>

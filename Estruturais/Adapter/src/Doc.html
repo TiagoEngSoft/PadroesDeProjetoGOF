@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Adapter — Lobo e Cordeiro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🔌 Padrão de Projeto: Adapter</h1>
+        <p>Um exemplo de Lobo em pele de Cordeiro e vice-versa 🐑🐺</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Adapter (GOF)</h2>
+        <div class="box">
+            <strong>Adapter</strong> é um padrão de projeto estrutural que permite que interfaces incompatíveis
+            trabalhem juntas. <br>
+            Ele converte a interface de uma classe em outra esperada pelos clientes, tornando classes com interfaces
+            incompatíveis compatíveis entre si.
+        </div>
+
+        <h2>🤔 O que é o Adapter de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem um <strong>Lobo</strong> com métodos de lobo (<code>uivar()</code>,
+            <code>atacar()</code>), mas quer usá-lo como se fosse um <strong>Cordeiro</strong>
+            (<code>balir()</code>).<br><br>
+            O Adapter cria uma "casca" (ou disfarce) ao redor do objeto, permitindo que ele seja usado com uma interface
+            diferente da original.
+        </div>
+
+        <h2>💡 Analogias: Lobo e Cordeiro</h2>
+        <ul>
+            <li><strong>Cordeiro:</strong> Interface com o método <code>balir()</code></li>
+            <li><strong>Lobo:</strong> Interface com os métodos <code>uivar()</code> e <code>atacar()</code></li>
+            <li><strong>Adapter:</strong> Um objeto que "finge" ser outro implementando sua interface</li>
+        </ul>
+
+        <h3>Exemplos:</h3>
+        <ul>
+            <li><strong>Lobo em pele de Cordeiro:</strong> Um <code>Lobo</code> adaptado para se comportar como um
+                <code>Cordeiro</code>
+            </li>
+            <li><strong>Cordeiro em pele de Lobo:</strong> Um <code>Cordeiro</code> adaptado para parecer um
+                <code>Lobo</code>
+            </li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── interfaces/
+│   ├── Lobo.java
+│   └── Cordeiro.java
+│
+├── animais/
+│   ├── LoboReal.java
+│   └── CordeiroReal.java
+│
+├── adapter/
+│   ├── LoboEmPeleDeCordeiro.java
+│   └── CordeiroEmPeleDeLobo.java
+│
+└── app/
+    └── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Cordeiro</h3>
+        <pre><code>public interface Cordeiro {
+    void balir();
+}</code></pre>
+
+        <h3>Interface Lobo</h3>
+        <pre><code>public interface Lobo {
+    void uivar();
+    void atacar();
+}</code></pre>
+
+        <h3>Adapter: Lobo em pele de Cordeiro</h3>
+        <pre><code>public class LoboEmPeleDeCordeiro implements Cordeiro {
+    private Lobo lobo;
+
+    public LoboEmPeleDeCordeiro(Lobo lobo) {
+        this.lobo = lobo;
+    }
+
+    public void balir() {
+        System.out.println("😇 Meeee... (parece dócil, mas...)");
+        lobo.uivar();
+        lobo.atacar();
+    }
+}</code></pre>
+
+        <h3>Adapter: Cordeiro em pele de Lobo</h3>
+        <pre><code>public class CordeiroEmPeleDeLobo implements Lobo {
+    private Cordeiro cordeiro;
+
+    public CordeiroEmPeleDeLobo(Cordeiro cordeiro) {
+        this.cordeiro = cordeiro;
+    }
+
+    public void uivar() {
+        System.out.println("😅 Auuu... (mas é só um cordeiro tentando)");
+    }
+
+    public void atacar() {
+        System.out.println("🐑 Tentando atacar... mas só sabe balir:");
+        cordeiro.balir();
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Lobo loboReal = new LoboReal();
+        Cordeiro cordeiroReal = new CordeiroReal();
+
+        Cordeiro disfarceLobo = new LoboEmPeleDeCordeiro(loboReal);
+        Lobo disfarceCordeiro = new CordeiroEmPeleDeLobo(cordeiroReal);
+
+        System.out.println("=== 🐺 Lobo em pele de cordeiro ===");
+        disfarceLobo.balir();
+
+        System.out.println("\\n=== 🐑 Cordeiro em pele de lobo ===");
+        disfarceCordeiro.uivar();
+        disfarceCordeiro.atacar();
+    }
+}
+</code></pre>
+
+        <h2>✅ Benefícios do Adapter</h2>
+        <div class="box">
+            <ul>
+                <li>Permite reutilizar código existente com interfaces diferentes</li>
+                <li>Promove a compatibilidade entre objetos de APIs diferentes</li>
+                <li>Evita modificações em classes existentes</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ <strong>Complexidade oculta:</strong> Muitos adapters em um sistema podem tornar o fluxo difícil
+                    de entender, criando camadas de abstração desnecessárias.</li>
+                <li>🚫 <strong>Adapter mal utilizado pode mascarar problemas de design:</strong> Se você precisar
+                    adaptar muitas coisas o tempo todo, talvez a arquitetura precise ser repensada.</li>
+                <li>🔄 <strong>Adaptação incompleta:</strong> Nem sempre é possível adaptar perfeitamente um objeto à
+                    nova interface, o que pode causar comportamentos inesperados.</li>
+                <li>🔗 <strong>Acoplamento acidental:</strong> Apesar de ajudar no desacoplamento, adapters mal
+                    projetados podem criar dependências não intencionais entre classes.</li>
+            </ul>
+        </div>
+
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            Adapter funciona como uma “máscara” que adapta o comportamento de um objeto para se encaixar no
+            sistema.<br><br>
+            No nosso exemplo, o <strong>Lobo</strong> pode se passar por <strong>Cordeiro</strong> (ou vice-versa), e
+            isso nos ajuda a compreender como o padrão permite compatibilidade entre interfaces diferentes sem alterar
+            suas implementações originais.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Adapter • 2025</p>
+    </footer>
+</body>
+
+</html>

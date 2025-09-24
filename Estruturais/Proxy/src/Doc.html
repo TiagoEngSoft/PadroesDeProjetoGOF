@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Proxy — Vídeo Sob Demanda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🧱 Padrão de Projeto: Proxy</h1>
+        <p>Um representante que controla o acesso a outro objeto 🎥🔒</p>
+    </header>
+
+    <main>
+
+        <h2>✅ Definição formal do padrão Proxy (GOF)</h2>
+        <div class="box">
+            <strong>Proxy</strong> é um padrão de projeto estrutural que fornece um substituto ou representante para
+            outro
+            objeto, controlando o acesso a ele.
+        </div>
+
+        <h2>🤔 O que é o Proxy de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem um <strong>vídeo muito pesado</strong> para carregar.<br>
+            Você não quer carregá-lo se o usuário não clicar no botão "Reproduzir".<br><br>
+            O <strong>Proxy</strong> entra como um "vídeo falso(video resumo)", que só carrega o original quando for
+            realmente
+            necessário.<br>
+            Ele atua como uma <strong>camada intermediária</strong> que protege, adia ou gerencia o acesso ao objeto
+            real.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── proxy/
+│   ├── Video.java
+│   ├── VideoReal.java
+│   └── VideoProxy.java
+└── Main.java
+    </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Video</h3>
+        <pre><code>public interface Video {
+    void reproduzir();
+}</code></pre>
+
+        <h3>Classe VideoReal</h3>
+        <pre><code>public class VideoReal implements Video {
+    private String nomeArquivo;
+
+    public VideoReal(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
+        carregarDoDisco(nomeArquivo);
+    }
+
+    private void carregarDoDisco(String nome) {
+        System.out.println("🔄 Carregando vídeo: " + nome);
+    }
+
+    public void reproduzir() {
+        System.out.println("▶️ Reproduzindo vídeo: " + nomeArquivo);
+    }
+}</code></pre>
+
+        <h3>Classe VideoProxy</h3>
+        <pre><code>public class VideoProxy implements Video {
+    private String nomeArquivo;
+    private VideoReal videoReal;
+
+    public VideoProxy(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
+    }
+
+    public void reproduzir() {
+        if (videoReal == null) {
+            videoReal = new VideoReal(nomeArquivo); // Carrega apenas na primeira vez
+        }
+        videoReal.reproduzir();
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Video video = new VideoProxy("filme-super-hd.mp4");
+
+        System.out.println("🎬 Primeiro acesso:");
+        video.reproduzir();
+
+        System.out.println("\\n⏯️ Segundo acesso:");
+        video.reproduzir();
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li><strong>🎬 Interface Video:</strong> Define um contrato comum para todos os vídeos, sejam eles reais
+                    ou proxies. Assim, o cliente pode usar qualquer um deles de forma transparente.</li>
+
+                <li><strong>📂 Classe VideoReal:</strong> Representa o vídeo completo, que pode ser pesado para carregar
+                    (como um arquivo grande ou streaming). Simula esse processo pesado no momento da criação, para
+                    mostrar que demora e consome recursos.</li>
+
+                <li><strong>🪞 Classe VideoProxy:</strong> Funciona como um vídeo resumo ou miniatura que aparece antes
+                    do vídeo real ser carregado. Ele <strong>não carrega o vídeo completo imediatamente</strong>, apenas
+                    quando alguém realmente pede para assistir (<code>reproduzir()</code>), evitando gasto desnecessário
+                    de recursos.</li>
+
+                <li><strong>🎥 Analogia prática:</strong> Imagine quando você assiste a um vídeo no YouTube — antes de
+                    clicar para ver o vídeo inteiro, aparece um resumo, uma prévia ou miniatura que é leve e rápida de
+                    carregar. O <strong>VideoProxy</strong> é esse resumo, e o <strong>VideoReal</strong> é o vídeo
+                    completo que só é carregado quando você clica para assistir.</li>
+
+                <li><strong>🧪 Classe Main:</strong> Demonstra o uso do proxy: na primeira vez que o vídeo é
+                    reproduzido, ele carrega o vídeo real e toca. Na segunda vez, como o vídeo já está carregado, ele
+                    toca diretamente, mostrando a eficiência do Proxy.</li>
+            </ul>
+        </div>
+
+
+        <h2>✅ Benefícios do Proxy</h2>
+        <div class="box">
+            <ul>
+                <li>Permite controle de acesso a objetos "caros" ou sensíveis.</li>
+                <li>Adia a criação de objetos até o momento realmente necessário (Lazy Loading).</li>
+                <li>Permite adicionar funcionalidades extras (log, segurança, cache) sem alterar o objeto real.</li>
+                <li>Ajuda na economia de recursos (memória, rede, disco).</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode adicionar complexidade extra se usado sem necessidade.</li>
+                <li>🔁 Pode causar problemas de sincronização se o objeto real for alterado fora do proxy.</li>
+                <li>🚫 Proxy mal feito pode esconder falhas do objeto real ou comportamentos inesperados.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Proxy</strong> é ideal para situações onde o acesso ao objeto real precisa ser controlado,
+            monitorado ou adiado.<br><br>
+            No exemplo, o vídeo real só é carregado quando necessário, economizando recursos e otimizando o desempenho —
+            como fazem plataformas de streaming com vídeos sob demanda.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Proxy • 2025</p>
+    </footer>
+
+</body>
+
+</html>

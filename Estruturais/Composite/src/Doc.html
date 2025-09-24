@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entendendo o Padrão Composite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3f51b5;
+        }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .exemplo {
+            background: #e8eaf6;
+            border-left: 5px solid #7986cb;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🗂️ Entendendo o Padrão Composite</h1>
+        <p>Exemplo com arquivos e pastas representando estrutura de um sistema de arquivos</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Composite (GOF)</h2>
+        <div class="box">
+            Composite é um padrão estrutural que permite tratar objetos individuais e composições desses objetos de forma uniforme, formando uma estrutura em árvore.
+            <br /><br />
+            Ele permite que clientes manipulem objetos simples (folhas) e complexos (compostos) da mesma forma.
+        </div>
+
+        <h2>🤔 O que é Composite de forma simples?</h2>
+        <div class="box">
+            É um padrão que organiza objetos em uma hierarquia árvore, onde cada objeto pode ser um único item ou um grupo de itens.
+        </div>
+
+        <h2>💡 Exemplo prático</h2>
+        <p>Você quer representar a estrutura de diretórios e arquivos de um sistema operacional.</p>
+        <p>Uma pasta pode conter arquivos e outras pastas — cada um deve ter um método para mostrar sua estrutura.</p>
+
+        <div class="exemplo">
+            Você deseja que tanto arquivos quanto pastas sejam tratados como "componentes" com uma interface comum.
+        </div>
+
+        <h2>📦 Estrutura do projeto</h2>
+        <pre><code>
+&lt;PROJETO&gt;
+│
+├── src/
+│   ├── composite/
+│   │   ├── Componente.java     ← Interface comum para arquivos e pastas
+│   │   ├── Arquivo.java        ← Classe folha
+│   │   └── Pasta.java          ← Classe composta que pode conter outros componentes
+│   │
+│   └── app/
+│       └── Main.java           ← Código cliente que monta e exibe a estrutura
+        </code></pre>
+
+        <h2>🧪 Exemplo de Código</h2>
+
+        <h3>1. Interface Componente</h3>
+        <pre><code>public interface Componente {
+    void mostrar(int nivel);
+}</code></pre>
+
+        <h3>2. Classe Arquivo (folha)</h3>
+        <pre><code>public class Arquivo implements Componente {
+    private String nome;
+
+    public Arquivo(String nome) {
+        this.nome = nome;
+    }
+
+    public void mostrar(int nivel) {
+        System.out.println("  ".repeat(nivel) + "- " + nome);
+    }
+}</code></pre>
+
+        <h3>3. Classe Pasta (composto)</h3>
+        <pre><code>public class Pasta implements Componente {
+    private String nome;
+    private List&lt;Componente&gt; filhos = new ArrayList&lt;&gt;();
+
+    public Pasta(String nome) {
+        this.nome = nome;
+    }
+
+    public void adicionar(Componente c) {
+        filhos.add(c);
+    }
+
+    public void remover(Componente c) {
+        filhos.remove(c);
+    }
+
+    public void mostrar(int nivel) {
+        System.out.println("  ".repeat(nivel) + "+ " + nome);
+        for (Componente filho : filhos) {
+            filho.mostrar(nivel + 1);
+        }
+    }
+}</code></pre>
+
+        <h3>4. Código Cliente</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Componente arquivo1 = new Arquivo("arquivo1.txt");
+        Componente arquivo2 = new Arquivo("arquivo2.txt");
+        Componente arquivo3 = new Arquivo("foto.png");
+
+        Pasta pastaDocumentos = new Pasta("Documentos");
+        Pasta pastaImagens = new Pasta("Imagens");
+        Pasta pastaRaiz = new Pasta("Raiz");
+
+        pastaDocumentos.adicionar(arquivo1);
+        pastaDocumentos.adicionar(arquivo2);
+        pastaImagens.adicionar(arquivo3);
+
+        pastaRaiz.adicionar(pastaDocumentos);
+        pastaRaiz.adicionar(pastaImagens);
+
+        pastaRaiz.mostrar(0);
+    }
+}</code></pre>
+
+        <h2>✅ Por que usar esse padrão?</h2>
+        <div class="box">
+            <ul>
+                <li>🌳 Permite tratar grupos e objetos individuais de forma uniforme.</li>
+                <li>🔄 Facilita a construção de estruturas em árvore.</li>
+                <li>🔧 Simplifica o código cliente, pois ele não precisa diferenciar folhas de compostos.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            Composite é ideal para representar estruturas hierárquicas, como sistemas de arquivos, menus, gráficos, entre outros.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Composite • 2025</p>
+    </footer>
+
+</body>
+
+</html>

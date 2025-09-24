@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entendendo o Prototype</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3f51b5;
+        }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .exemplo {
+            background: #e8f5e9;
+            border-left: 5px solid #7986cb;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🧬 Entendendo o Padrão Prototype</h1>
+    <p>Um exemplo prático com clonagem profunda de objetos em Java</p>
+</header>
+
+<main>
+    <h2>✅ Definição formal do padrão Prototype (GOF)</h2>
+    <div class="box">
+        Prototype é um padrão de projeto criacional que permite copiar objetos existentes <strong>sem acoplá-los às suas classes específicas</strong>.<br><br>
+        Ele é útil quando a criação de um objeto é custosa e você deseja reutilizá-lo criando cópias (clones).
+    </div>
+
+    <h2>🤔 O que é Prototype de forma simples?</h2>
+    <div class="box">
+        É como fazer uma cópia (clone) de um objeto, incluindo todos os seus dados, em vez de criar tudo de novo do zero.
+    </div>
+
+    <h2>💡 Exemplo prático</h2>
+    <p>Vamos modelar um <strong>Cartão de Aniversário</strong> que é enviado para uma <strong>Pessoa</strong> com um <strong>Endereço</strong>.</p>
+    <p>Esse cartão poderá ser clonado. Ao modificar o clone, o original não será afetado — pois usamos <strong>clonagem profunda</strong>.</p>
+
+    <div class="exemplo">
+        Cada cartão contém uma <code>Pessoa</code>, e essa pessoa tem um <code>Endereço</code>.<br>
+        O clone do cartão copia também a pessoa e o endereço — isso é clonagem profunda!
+    </div>
+
+    <h2>📦 Estrutura do Projeto</h2>
+    <pre><code>
+&lt;PROJETO&gt;
+│
+├── src/
+│   ├── prototype/
+│   │   └── Cartao.java
+│   ├── modelos/
+│   │   ├── Endereco.java
+│   │   ├── Pessoa.java
+│   │   └── CartaoAniversario.java
+│   └── app/
+│       └── Main.java
+    </code></pre>
+
+    <h2>🧪 Exemplo de Código</h2>
+
+    <h3>1. Interface Prototype</h3>
+    <pre><code>public interface Cartao {
+    void exibirMensagem();
+    Cartao clone();
+}</code></pre>
+
+    <h3>2. Cartão com relacionamento (Pessoa → Endereço)</h3>
+    <pre><code>public class CartaoAniversario implements Cartao {
+    private String mensagem;
+    private Pessoa destinatario;
+
+    public CartaoAniversario(String mensagem, Pessoa destinatario) {
+        this.mensagem = mensagem;
+        this.destinatario = destinatario;
+    }
+
+    public CartaoAniversario(CartaoAniversario outro) {
+        this.mensagem = outro.mensagem;
+        this.destinatario = new Pessoa(outro.destinatario); // Clonagem profunda
+    }
+
+    public void exibirMensagem() {
+        System.out.println("Cartão para " + destinatario + ": " + mensagem);
+    }
+
+    public Cartao clone() {
+        return new CartaoAniversario(this);
+    }
+}</code></pre>
+
+    <h3>3. Código do Cliente</h3>
+    <pre><code>public class Main {
+    public static void main(String[] args) {
+        Endereco endereco = new Endereco("Rua A", "Cidade X");
+        Pessoa joao = new Pessoa("João", 30, endereco);
+
+        Cartao original = new CartaoAniversario("Parabéns!", joao);
+        Cartao clone = original.clone();
+
+        // Modificando o clone
+        Pessoa pessoaClone = ((CartaoAniversario) clone).getDestinatario();
+        pessoaClone.setNome("Maria");
+        pessoaClone.getEndereco().setCidade("Cidade Y");
+
+        original.exibirMensagem(); // João em Cidade X
+        clone.exibirMensagem();    // Maria em Cidade Y
+    }
+}</code></pre>
+
+    <h2>✅ Benefícios do Prototype</h2>
+    <div class="box">
+        <ul>
+            <li>🚀 Permite criar objetos rapidamente sem depender de construtores complexos.</li>
+            <li>🔁 Facilita a cópia de objetos com estados internos personalizados.</li>
+            <li>🔒 Com <strong>clonagem profunda</strong>, você evita que alterações no clone afetem o original.</li>
+        </ul>
+    </div>
+
+    <h2>📌 Conclusão</h2>
+    <div class="box">
+        Prototype é ideal para situações onde objetos são semelhantes e criar do zero seria custoso.<br>
+        Clonagem profunda garante independência total entre original e cópia.<br><br>
+        É como fazer um backup completo de um formulário preenchido e depois editar a cópia sem afetar o original.
+    </div>
+</main>
+
+<footer>
+    <p>Tiago Santos • Padrões de Projeto em Java • Prototype (Deep Clone) • 2025</p>
+</footer>
+
+</body>
+
+</html>

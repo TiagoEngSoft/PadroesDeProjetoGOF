@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entendendo o Factory Method</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2196f3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #2196f3;
+            margin-top: 40px;
+        }
+
+        .box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .exemplo {
+            background: #e3f2fd;
+            border-left: 5px solid #64b5f6;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🏭 Entendendo o Padrão Factory Method</h1>
+        <p>Um exemplo simples com cartões personalizados</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Factory Method (GOF)</h2>
+        <div class="box">
+            Factory Method é um padrão de projeto criacional que define uma <strong>interface para a criação de
+                objetos</strong>,
+            mas permite que as <strong>subclasses decidam qual classe concreta será instanciada</strong>.
+            <br><br>
+            Ele promove o <strong>desacoplamento</strong> entre o código cliente e as classes concretas, permitindo
+            maior flexibilidade e extensibilidade no sistema.
+        </div>
+
+        <h2>🤔 O que é Factory Method de forma simples?</h2>
+        <div class="box">
+            É um padrão de projeto que define um **método de criação de objetos** na superclasse, mas permite que as
+            **subclasses escolham qual objeto criar**.
+            <br><br>
+            <strong>Ou seja:</strong> ele separa a criação do objeto do seu uso.
+        </div>
+
+        <h2>💡 Exemplo prático</h2>
+        <p>Imagine que você está criando um sistema para uma gráfica que imprime cartões.</p>
+
+        <p>Você pode ter cartões como:</p>
+        <ul>
+            <li>🎉 Cartão de Aniversário</li>
+            <li>🎄 Cartão de Natal</li>
+            <li>🙏 Cartão de Agradecimento</li>
+        </ul>
+
+        <div class="exemplo">
+            O sistema precisa gerar esses cartões automaticamente, mas **sem que o código principal saiba qual tipo está
+            sendo criado**. Quem decide isso são as subclasses!
+        </div>
+
+        <h2>🏗️ Estrutura do exemplo</h2>
+        <pre><code>
+&lt;PROJETO&gt;
+│
+├── src/
+│   ├── cartao/
+│   │   ├── Cartao.java
+│   │   ├── CartaoAniversario.java
+│   │   └── CartaoNatal.java
+│
+│   ├── criador/
+│   │   ├── CriadorCartao.java
+│   │   ├── CriadorCartaoAniversario.java
+│   │   └── CriadorCartaoNatal.java
+│
+│   └── app/
+│       └── Main.java
+
+</code></pre>
+
+        <h2>🧪 Exemplo de Código</h2>
+
+        <h3>1. Interface do Cartão</h3>
+        <pre><code>public interface Cartao {
+    void exibirMensagem();
+}</code></pre>
+
+        <h3>2. Implementações Concretas</h3>
+        <pre><code>public class CartaoAniversario implements Cartao {
+    public void exibirMensagem() {
+        System.out.println("Feliz Aniversário!");
+    }
+}
+
+public class CartaoNatal implements Cartao {
+    public void exibirMensagem() {
+        System.out.println("Feliz Natal!");
+    }
+}</code></pre>
+
+        <h3>3. Criador Abstrato (Factory Method)</h3>
+        <pre><code>public abstract class CriadorCartao {
+    // Factory Method
+    public abstract Cartao criarCartao();
+
+    // Método que usa o Cartão
+    public void enviarCartao() {
+        Cartao cartao = criarCartao();
+        cartao.exibirMensagem();
+    }
+}</code></pre>
+
+        <h3>4. Criadores Concretos</h3>
+        <pre><code>public class CriadorCartaoAniversario extends CriadorCartao {
+    public Cartao criarCartao() {
+        return new CartaoAniversario();
+    }
+}
+
+public class CriadorCartaoNatal extends CriadorCartao {
+    public Cartao criarCartao() {
+        return new CartaoNatal();
+    }
+}</code></pre>
+
+        <h3>5. Código Cliente</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        CriadorCartao criador1 = new CriadorCartaoAniversario();
+        CriadorCartao criador2 = new CriadorCartaoNatal();
+
+        criador1.enviarCartao(); // Saída: Feliz Aniversário!
+        criador2.enviarCartao(); // Saída: Feliz Natal!
+    }
+}</code></pre>
+        <h2>✅ Por que usar esse padrão?</h2>
+        <div class="box">
+            <ul>
+                <li>📦 <strong>O código principal (cliente) não precisa saber qual classe está sendo usada.</strong><br>
+                    No nosso exemplo, o código cliente trabalha com a classe abstrata <code>CriadorCartao</code> e a
+                    interface <code>Cartao</code>, sem saber se está usando <code>CartaoAniversario</code> ou
+                    <code>CartaoNatal</code>.
+                    A criação do objeto acontece dentro do método <code>criarCartao()</code>, que é implementado nas
+                    subclasses (<code>CriadorCartaoAniversario</code> e <code>CriadorCartaoNatal</code>).
+                    Assim, o cliente não precisa mudar se quisermos criar um novo tipo de cartão.
+                </li>
+                <li>🔁 <strong>Fica fácil adicionar novos tipos de cartões sem mudar o código existente.</strong><br>
+                    Para criar um novo tipo, por exemplo <code>CartaoAgradecimento</code>, basta criar uma nova classe
+                    concreta do cartão, e uma nova subclasse do criador, como <code>CriadorCartaoAgradecimento</code>,
+                    implementando o método <code>criarCartao()</code> para retornar esse novo cartão.
+                    O cliente continua usando a interface <code>CriadorCartao</code> e não precisa ser alterado.
+                </li>
+                <li>🧼 <strong>Separa a lógica de criação da lógica de uso (desacoplamento).</strong><br>
+                    O método <code>criarCartao()</code> encapsula a criação do objeto, enquanto o método
+                    <code>enviarCartao()</code> na classe <code>CriadorCartao</code> usa o cartão criado.
+                    Essa separação facilita a manutenção e evolução do sistema, pois mudar como os cartões são criados
+                    não
+                    impacta o código que os usa.
+                </li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            Factory Method é como um "modelo de produção". <br><br>
+            Você define um processo (como criar), mas deixa que as subclasses decidam **o que será criado**.
+            <br><br>
+            Assim, o sistema continua organizado, flexível e fácil de expandir.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Factory Method • 2025</p>
+    </footer>
+
+</body>
+
+</html>

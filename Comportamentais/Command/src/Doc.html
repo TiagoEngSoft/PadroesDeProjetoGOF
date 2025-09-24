@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Command — Controle Remoto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #0275d8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #0275d8;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #eef1f5;
+            border-left: 6px solid #0275d8;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        footer {
+            background: #e9ecef;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        code {
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🕹️ Padrão de Projeto: Command</h1>
+        <p>Encapsulando comandos para dispositivos como TV e Luz</p>
+    </header>
+
+    <main>
+
+        <h2>✅ Definição formal do padrão Command (GOF)</h2>
+        <div class="box">
+            <strong>Command</strong> é um padrão comportamental que encapsula uma solicitação como um objeto,
+            permitindo parametrizar clientes com diferentes requisições, enfileirar ou registrar solicitações e suportar
+            operações que podem ser desfeitas.
+        </div>
+
+        <h2>🤔 O que é o Command de forma simples?</h2>
+        <div class="box">
+            Imagine um controle remoto. Cada botão pode executar uma ação diferente, como ligar a TV ou apagar a luz.
+            <br><br>
+            Com o padrão <strong>Command</strong>, cada botão encapsula um "comando", e o controle remoto apenas executa
+            o comando associado ao botão.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+CommandControleRemoto/
+└── src/
+    ├── Main.java
+    ├── ControleRemoto.java
+    ├── comandos/
+    │   ├── Comando.java
+    │   ├── LigarLuz.java
+    │   ├── DesligarLuz.java
+    │   ├── LigarTV.java
+    │   └── DesligarTV.java
+    └── dispositivos/
+        ├── Luz.java
+        └── TV.java
+        </code></pre>
+
+        <h2>🧪 Código Resumido</h2>
+
+        <h3>Interface Comando</h3>
+        <pre><code>public interface Comando {
+    void executar();
+}</code></pre>
+
+        <h3>Classe LigarLuz</h3>
+        <pre><code>public class LigarLuz implements Comando {
+    private Luz luz;
+    public LigarLuz(Luz luz) {
+        this.luz = luz;
+    }
+    public void executar() {
+        luz.ligar();
+    }
+}</code></pre>
+
+        <h3>Classe ControleRemoto</h3>
+        <pre><code>public class ControleRemoto {
+    private Comando comando;
+    public void setComando(Comando comando) {
+        this.comando = comando;
+    }
+    public void pressionarBotao() {
+        comando.executar();
+    }
+}</code></pre>
+
+        <h3>Classe Main</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        ControleRemoto controle = new ControleRemoto();
+        Luz luz = new Luz();
+        Comando ligarLuz = new LigarLuz(luz);
+
+        controle.setComando(ligarLuz);
+        controle.pressionarBotao(); // 💡 Luz ligada
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código</h2>
+        <div class="box">
+            <ul>
+                <li><strong>Comando:</strong> Interface que define o método <code>executar()</code>, comum a todos os
+                    comandos.</li>
+                <li><strong>LigarLuz / DesligarTV etc:</strong> Implementam a interface e executam ações específicas.</li>
+                <li><strong>ControleRemoto:</strong> Armazena um comando e executa quando o botão é pressionado.</li>
+                <li><strong>Main:</strong> Configura o controle com os comandos e executa.</li>
+            </ul>
+        </div>
+
+        <h2>🎯 Benefícios do Command</h2>
+        <div class="box">
+            <ul>
+                <li>Encapsula ações como objetos reutilizáveis.</li>
+                <li>Facilita o histórico de ações e suporte a desfazer/refazer.</li>
+                <li>Permite alterar comandos dinamicamente em tempo de execução.</li>
+                <li>Separação clara entre quem solicita e quem executa.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode aumentar o número de classes.</li>
+                <li>🔧 Estrutura mais complexa para ações simples.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Command</strong> é ideal quando você deseja encapsular ações e desacoplar o emissor do
+            receptor.
+            <br><br>
+            No exemplo, cada botão do controle representa um comando, e o controle apenas executa o que foi
+            configurado. Isso torna o sistema flexível e fácil de estender.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Command • 2025</p>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Flyweight — Emojis Balões</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #009688;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #009688;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #009688;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎈 Padrão de Projeto: Flyweight</h1>
+        <p>Economia de memória reutilizando objetos parecidos</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Flyweight (GOF)</h2>
+        <div class="box">
+            <strong>Flyweight</strong> é um padrão de projeto estrutural que permite o uso eficiente de objetos em
+            grande quantidade, compartilhando partes comuns do estado entre eles.
+        </div>
+
+        <h2>🤔 O que é o Flyweight de forma simples?</h2>
+        <div class="box">
+            Imagine que você precisa desenhar milhares de balões 🎈 na tela. Criar um novo objeto para cada balão seria
+            um desperdício de memória.<br><br>
+            O padrão <strong>Flyweight</strong> permite <strong>reaproveitar objetos comuns</strong> (o "modelo" do
+            balão) e só variar o que é realmente diferente, como a posição ou cor.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Balões com Emojis</h2>
+        <ul>
+            <li><strong>EmojiBalao:</strong> Representa o objeto compartilhado (flyweight) 🎈</li>
+            <li><strong>EmojiFactory:</strong> Garante que não criamos balões repetidos — apenas 1 por cor</li>
+            <li><strong>Main:</strong> Gera balões em posições aleatórias com reutilização</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── flyweight/
+│   └── EmojiBalao.java
+├── factory/
+│   └── EmojiFactory.java
+└── Main.java
+
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Classe EmojiBalao</h3>
+        <pre><code>public class EmojiBalao {
+    private final String emoji = "🎈";
+
+    public void desenhar(int x, int y, String cor) {
+        System.out.println("Desenhando balão " + emoji +
+                           " na posição (" + x + "," + y + ") com a cor " + cor);
+    }
+}</code></pre>
+
+        <h3>Fábrica EmojiFactory</h3>
+        <pre><code>import java.util.HashMap;
+
+public class EmojiFactory {
+    private static final HashMap&lt;String, EmojiBalao&gt; cache = new HashMap<>();
+
+    public static EmojiBalao getBalao(String cor) {
+        EmojiBalao balao = cache.get(cor);
+        if (balao == null) {
+            balao = new EmojiBalao();
+            cache.put(cor, balao);
+            System.out.println("🎨 Criando novo objeto EmojiBalão para a cor: " + cor);
+        }
+        return balao;
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        String[] cores = { "vermelho", "azul", "verde" };
+
+        for (int i = 0; i &lt; 10; i++) {
+            String cor = cores[i % cores.length];
+            int x = (int) (Math.random() * 100);
+            int y = (int) (Math.random() * 100);
+
+            EmojiBalao balao = EmojiFactory.getBalao(cor);
+            balao.desenhar(x, y, cor);
+        }
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li><strong>🎈 EmojiBalao:</strong> é o <strong>objeto compartilhado</strong>. Em vez de criar milhares
+                    de balões, usamos o mesmo para cada cor e apenas mudamos a posição e cor ao desenhar.</li>
+
+                <li><strong>🛠️ EmojiFactory:</strong> é a fábrica que <strong>garante o reaproveitamento</strong> de
+                    objetos. Só cria um EmojiBalao por cor. As próximas chamadas reutilizam a mesma instância.</li>
+
+                <li><strong>🎯 Main:</strong> simula a criação de 10 balões. Em vez de criar 10 objetos, o programa
+                    reutiliza o mesmo para cada cor — otimizando memória e desempenho.</li>
+
+                <li><strong>💡 Ponto chave:</strong> o Flyweight separa os dados:
+                    <ul>
+                        <li><strong>Intrínsecos (compartilhados):</strong> o emoji 🎈</li>
+                        <li><strong>Extrínsecos (variáveis):</strong> cor, posição</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Flyweight</h2>
+        <div class="box">
+            <ul>
+                <li>🚀 Redução drástica no consumo de memória</li>
+                <li>🔁 Reutilização de objetos com comportamento semelhante</li>
+                <li>📊 Ideal para quando há muitos objetos repetidos (como jogos, gráficos, editores)</li>
+                <li>🔄 Separação clara entre dados compartilhados e variáveis</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Gerenciar corretamente os dados extrínsecos (como posição, estado, etc.)</li>
+                <li>⚠️ Pode adicionar complexidade desnecessária em sistemas pequenos</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Flyweight</strong> ajuda a otimizar recursos em sistemas que precisam criar muitos objetos
+            semelhantes.<br><br>
+            Com ele, desenhar milhares de balões 🎈 se torna leve e eficiente, pois compartilhamos o que é comum e
+            variamos apenas o necessário. É uma forma inteligente de ganhar performance sem sacrificar organização.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Flyweight • 2025</p>
+    </footer>
+</body>
+
+</html>

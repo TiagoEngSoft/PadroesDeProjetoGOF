@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Facade — Home Theater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎬 Padrão de Projeto: Facade</h1>
+        <p>Uma fachada simples para sistemas complexos 🎛️</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Facade (GOF)</h2>
+        <div class="box">
+            <strong>Facade</strong> é um padrão estrutural que fornece uma interface unificada para um conjunto de
+            interfaces em um subsistema.<br>
+            Ele define uma interface de alto nível que torna o subsistema mais fácil de usar.
+        </div>
+
+        <h2>🤔 O que é o Facade de forma simples?</h2>
+        <div class="box">
+            Imagine um <strong>sistema de Home Theater</strong> com áudio, vídeo e internet. Ligar tudo individualmente
+            pode ser trabalhoso.<br>
+            Com o Facade, você cria uma <strong>interface simplificada</strong> que executa todos os passos para o
+            usuário — com um único comando!
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>.
+└── src
+    ├── sistema
+    │   ├── SistemaAudio.java
+    │   ├── SistemaVideo.java
+    │   └── SistemaRede.java
+    │── Main.java
+    |── HomeTheaterFacade.java
+</code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Classe do subsistema de áudio</h3>
+        <pre><code>public class SistemaAudio {
+    public void ligarAudio() {
+        System.out.println("Áudio ligado.");
+    }
+
+    public void desligarAudio() {
+        System.out.println("Áudio desligado.");
+    }
+}</code></pre>
+
+        <h3>Classe do subsistema de vídeo</h3>
+        <pre><code>public class SistemaVideo {
+    public void ligarVideo() {
+        System.out.println("Vídeo ligado.");
+    }
+
+    public void desligarVideo() {
+        System.out.println("Vídeo desligado.");
+    }
+}</code></pre>
+
+        <h3>Classe do subsistema de rede</h3>
+        <pre><code>public class SistemaRede {
+    public void conectarInternet() {
+        System.out.println("Internet conectada.");
+    }
+
+    public void desconectarInternet() {
+        System.out.println("Internet desconectada.");
+    }
+}</code></pre>
+
+        <h3>Classe Facade</h3>
+        <pre><code>public class HomeTheaterFacade {
+    private SistemaAudio audio;
+    private SistemaVideo video;
+    private SistemaRede rede;
+
+    public HomeTheaterFacade() {
+        audio = new SistemaAudio();
+        video = new SistemaVideo();
+        rede = new SistemaRede();
+    }
+
+    public void ligarSistema() {
+        audio.ligarAudio();
+        video.ligarVideo();
+        rede.conectarInternet();
+        System.out.println("Sistema de Home Theater pronto para uso!");
+    }
+
+    public void desligarSistema() {
+        audio.desligarAudio();
+        video.desligarVideo();
+        rede.desconectarInternet();
+        System.out.println("Sistema de Home Theater desligado.");
+    }
+}</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        HomeTheaterFacade homeTheater = new HomeTheaterFacade();
+
+        System.out.println("Ligando o sistema:");
+        homeTheater.ligarSistema();
+
+        System.out.println("\\nDesligando o sistema:");
+        homeTheater.desligarSistema();
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código</h2>
+        <div class="box">
+            <ul>
+                <li><strong>🔊 SistemaAudio, 📺 SistemaVideo, 🌐 SistemaRede:</strong> São partes do sistema que têm
+                    responsabilidades específicas.</li>
+                <li><strong>🎯 HomeTheaterFacade:</strong> É a <strong>fachada</strong> (facade) que encapsula a
+                    complexidade dos subsistemas e fornece uma interface simples ao cliente.</li>
+                <li><strong>🖥️ Main.java:</strong> O cliente que usa a fachada para interagir com o sistema inteiro sem
+                    saber dos detalhes internos.</li>
+                <li><strong>💡 Isso caracteriza o padrão Facade:</strong> uma <em>interface unificada</em> para esconder
+                    a complexidade de subsistemas.</li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Facade</h2>
+        <div class="box">
+            <ul>
+                <li>Simplifica o uso de sistemas complexos.</li>
+                <li>Reduz o acoplamento entre cliente e subsistemas.</li>
+                <li>Centraliza o controle das operações do sistema.</li>
+                <li>Facilita futuras mudanças e manutenções.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ O Facade não impede o uso direto das classes internas (ele apenas facilita).</li>
+                <li>🧱 Pode se tornar muito grande se acumular muita responsabilidade.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Facade</strong> oferece uma maneira elegante de <strong>esconder a complexidade</strong> de
+            múltiplas classes colaboradoras, oferecendo um ponto de entrada único e simplificado.<br><br>
+            Ideal para sistemas com muitos módulos ou bibliotecas que precisam de uma interface mais limpa para o
+            cliente.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Facade • 2025</p>
+    </footer>
+</body>
+
+</html>

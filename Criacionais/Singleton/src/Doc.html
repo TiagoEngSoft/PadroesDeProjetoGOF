@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entendendo o Singleton</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #3f51b5;
+      margin-top: 40px;
+    }
+
+    .box {
+      background-color: #f1f1f1;
+      padding: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #3f51b5;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    pre {
+      background-color: #272822;
+      color: #f8f8f2;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .exemplo {
+      background: #e8eaf6;
+      border-left: 5px solid #7986cb;
+      padding: 10px;
+      margin: 20px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #eee;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🔒 Entendendo o Padrão Singleton</h1>
+    <p>Um exemplo simples e prático com configuração de sistema</p>
+  </header>
+
+  <main>
+    <h2>✅ Definição formal do padrão Singleton (GOF)</h2>
+    <div class="box">
+      Singleton é um padrão de projeto criacional que garante que uma classe tenha <strong>apenas uma instância
+        global</strong> e fornece um ponto de acesso a ela.
+    </div>
+
+    <h2>🤔 O que é Singleton de forma simples?</h2>
+    <div class="box">
+      É uma forma de garantir que só exista uma cópia de um objeto — útil para classes como configurações, cache,
+      loggers, banco de dados, etc.
+    </div>
+
+    <h2>💡 Exemplo prático</h2>
+    <p>Temos uma classe <code>Configuracao</code> que representa os parâmetros globais de um sistema:</p>
+    <ul>
+      <li>Ambiente: PRODUCAO ou DESENVOLVIMENTO</li>
+      <li>Versão do sistema</li>
+    </ul>
+
+    <div class="exemplo">
+      Ao acessar a instância de <code>Configuracao</code> em qualquer parte da aplicação, ela deve ser sempre a mesma.
+    </div>
+
+    <h2>📦 Estrutura do Projeto</h2>
+    <pre><code>
+&lt;PROJETO&gt;
+│
+├── src/
+│   ├── singleton/
+│   │   └── Configuracao.java
+│   └── app/
+│       └── Main.java
+    </code></pre>
+
+    <h2>🧪 Exemplo de Código</h2>
+
+    <h3>1. A classe Singleton</h3>
+    <pre><code>public class Configuracao {
+    private static Configuracao instancia;
+
+    private String ambiente;
+    private String versao;
+
+    private Configuracao() {
+        this.ambiente = "PRODUCAO";
+        this.versao = "1.0.0";
+    }
+
+    public static Configuracao getInstancia() {
+        if (instancia == null) {
+            instancia = new Configuracao();
+        }
+        return instancia;
+    }
+
+    // Getters e setters...
+}</code></pre>
+
+    <h3>2. Código do Cliente (uso da configuração)</h3>
+    <pre><code>public class Main {
+    public static void main(String[] args) {
+        Configuracao conf1 = Configuracao.getInstancia();
+        System.out.println("Inicial: " + conf1);
+
+        conf1.setAmbiente("DESENVOLVIMENTO");
+        conf1.setVersao("1.1.0");
+
+        Configuracao conf2 = Configuracao.getInstancia();
+        System.out.println("Novamente: " + conf2);
+
+        if (conf1 == conf2) {
+            System.out.println("✅ Singleton confirmado.");
+        }
+    }
+}</code></pre>
+
+    <h2>✅ Por que usar o padrão Singleton?</h2>
+    <div class="box">
+      <ul>
+        <li>🌍 Garante uma única instância global de uma classe.</li>
+        <li>🔒 Controla o acesso ao recurso compartilhado.</li>
+        <li>🔄 Útil para configurações, logs, conexões, cache, etc.</li>
+      </ul>
+    </div>
+
+    <h2>⚠️ Cuidados</h2>
+    <div class="box">
+      <ul>
+        <li>🚫 Singleton pode ser um antipadrão se mal utilizado (excesso de estado global).</li>
+        <li>🧪 Pode dificultar testes unitários.</li>
+        <li>🌐 Em aplicações multithread, deve-se garantir que o acesso à instância seja <code>thread-safe</code>.</li>
+      </ul>
+    </div>
+
+    <h2>📌 Conclusão</h2>
+    <div class="box">
+      Use Singleton quando for necessário <strong>um único ponto de acesso compartilhado</strong> a uma instância, como
+      configurações ou log de eventos.
+    </div>
+  </main>
+
+  <footer>
+    <p>Tiago Santos • Padrões de Projeto em Java • Singleton • 2025</p>
+  </footer>
+
+</body>
+
+</html>

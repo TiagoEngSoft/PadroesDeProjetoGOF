@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Decorator — Bebidas com Adicionais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎨 Padrão de Projeto: Decorator</h1>
+        <p>Adicionando funcionalidades a objetos de forma flexível e dinâmica ☕✨</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Decorator (GOF)</h2>
+        <div class="box">
+            O <strong>Decorator</strong> é um padrão estrutural que permite adicionar responsabilidades e comportamentos extras
+            a objetos dinamicamente, sem alterar sua estrutura original, através do encapsulamento.
+        </div>
+
+        <h2>🤔 O que é o Decorator de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem uma bebida simples, como um café, e quer adicionar ingredientes extras, como leite ou chocolate.<br><br>
+            Ao invés de criar uma nova classe para cada combinação (Café com leite, Café com chocolate, Café com leite e chocolate, etc),
+            o Decorator "embrulha" a bebida original com adicionais, compondo funcionalidades em tempo de execução de forma flexível.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+.
+└── src
+    ├── cafe
+    │   ├── Bebida.java
+    │   ├── CafeSimples.java
+    │   └── DecoradorBebida.java
+    ├── adicionais
+    │   ├── ComLeite.java
+    │   └── ComChocolate.java
+    └── app
+        └── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Bebida</h3>
+        <pre><code>package cafe;
+
+public interface Bebida {
+    String getDescricao();
+    double getPreco();
+}
+</code></pre>
+
+        <h3>Implementação básica: Café Simples</h3>
+        <pre><code>package cafe;
+
+public class CafeSimples implements Bebida {
+    public String getDescricao() {
+        return "Café simples";
+    }
+
+    public double getPreco() {
+        return 3.00;
+    }
+}
+</code></pre>
+
+        <h3>Decorator abstrato: DecoradorBebida</h3>
+        <pre><code>package cafe;
+
+public abstract class DecoradorBebida implements Bebida {
+    protected Bebida bebida;
+
+    public DecoradorBebida(Bebida bebida) {
+        this.bebida = bebida;
+    }
+
+    public abstract String getDescricao();
+    public abstract double getPreco();
+}
+</code></pre>
+
+        <h3>Decorator concreto: ComLeite</h3>
+        <pre><code>package adicionais;
+
+import cafe.Bebida;
+import cafe.DecoradorBebida;
+
+public class ComLeite extends DecoradorBebida {
+    public ComLeite(Bebida bebida) {
+        super(bebida);
+    }
+
+    public String getDescricao() {
+        return bebida.getDescricao() + ", com leite";
+    }
+
+    public double getPreco() {
+        return bebida.getPreco() + 1.00;
+    }
+}
+</code></pre>
+
+        <h3>Decorator concreto: ComChocolate</h3>
+        <pre><code>package adicionais;
+
+import cafe.Bebida;
+import cafe.DecoradorBebida;
+
+public class ComChocolate extends DecoradorBebida {
+    public ComChocolate(Bebida bebida) {
+        super(bebida);
+    }
+
+    public String getDescricao() {
+        return bebida.getDescricao() + ", com chocolate";
+    }
+
+    public double getPreco() {
+        return bebida.getPreco() + 1.50;
+    }
+}
+</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>package app;
+
+import cafe.*;
+import adicionais.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Bebida cafe = new CafeSimples();
+        System.out.println(cafe.getDescricao() + " - R$ " + cafe.getPreco());
+
+        Bebida cafeComLeite = new ComLeite(cafe);
+        System.out.println(cafeComLeite.getDescricao() + " - R$ " + cafeComLeite.getPreco());
+
+        Bebida cafeComTudo = new ComChocolate(new ComLeite(cafe));
+        System.out.println(cafeComTudo.getDescricao() + " - R$ " + cafeComTudo.getPreco());
+    }
+}
+</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li>
+                    <strong>☕ Interface Bebida:</strong>
+                    Define o que toda bebida deve ter: uma descrição e um preço. Isso garante que tanto a bebida básica quanto os decoradores possam ser tratados da mesma forma.
+                </li>
+
+                <li>
+                    <strong>🍵 CafeSimples:</strong>
+                    Implementa a bebida básica, sem adicionais. Serve como o objeto principal a ser decorado.
+                </li>
+
+                <li>
+                    <strong>🎁 DecoradorBebida:</strong>
+                    Classe abstrata que implementa a interface Bebida e contém uma referência para outro objeto Bebida.
+                    Essa composição é o que caracteriza o padrão Decorator: o decorador "embrulha" o objeto original para adicionar funcionalidades.
+                </li>
+
+                <li>
+                    <strong>🥛 ComLeite e 🍫 ComChocolate:</strong>
+                    São decoradores concretos que estendem DecoradorBebida e adicionam comportamento extra (descrição e preço) à bebida original.
+                    Eles chamam os métodos do objeto interno e acrescentam suas próprias informações.
+                </li>
+
+                <li>
+                    <strong>🚀 Classe Main:</strong>
+                    Cria uma bebida simples e vai "decorando" com adicionais. Exibe o resultado após cada adição, mostrando como podemos compor funcionalidades em tempo de execução.
+                </li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Decorator</h2>
+        <div class="box">
+            <ul>
+                <li>Permite adicionar funcionalidades a objetos sem modificar suas classes.</li>
+                <li>Facilita a composição dinâmica e flexível de comportamentos.</li>
+                <li>Evita a explosão de subclasses para cada combinação possível.</li>
+                <li>Segue o princípio aberto/fechado (aberto para extensão, fechado para modificação).</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode tornar o código mais difícil de entender devido à criação de muitas pequenas classes.</li>
+                <li>💡 A complexidade do encadeamento de decoradores deve ser bem gerenciada.</li>
+                <li>🔍 Nem sempre é necessário para casos simples.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Decorator</strong> é ideal quando queremos adicionar funcionalidades extras a objetos de forma flexível e sem alterar sua estrutura.<br><br>
+            Ele promove composição dinâmica de comportamentos, aumentando a reutilização e facilitando a manutenção.<br><br>
+            Assim, podemos montar bebidas com variados adicionais sem precisar criar classes para cada combinação possível.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Decorator • 2025</p>
+    </footer>
+</body>
+
+</html>

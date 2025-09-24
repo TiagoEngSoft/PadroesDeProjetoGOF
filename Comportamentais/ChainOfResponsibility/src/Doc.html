@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Chain of Responsibility — Suporte Técnico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #4caf50;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🔗 Padrão de Projeto: Chain of Responsibility</h1>
+        <p>Delegando a responsabilidade de forma encadeada 💬🧑‍💻</p>
+    </header>
+
+    <main>
+
+        <h2>✅ Definição formal (GoF)</h2>
+        <div class="box">
+            O padrão <strong>Chain of Responsibility</strong> permite que vários objetos tenham a chance de processar uma solicitação,
+            evitando o acoplamento entre o remetente e o receptor, ao encadear os objetos em uma cadeia.
+        </div>
+
+        <h2>🤔 O que é Chain of Responsibility na prática?</h2>
+        <div class="box">
+            Imagine que um cliente abre um chamado de suporte.<br><br>
+            - Primeiro, o <strong>Atendente</strong> tenta resolver.<br>
+            - Se ele não conseguir, o chamado é encaminhado ao <strong>Suporte Técnico</strong>.<br>
+            - Se ainda assim não for resolvido, vai para o <strong>Especialista</strong>.<br><br>
+            Essa é a ideia do padrão: <strong>passar a responsabilidade ao próximo</strong> até que alguém trate.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+└── br/com/empresa/chain/
+    ├── Main.java
+    ├── Chamado.java
+    └── responsaveis/
+        ├── Responsavel.java
+        ├── Atendente.java
+        ├── SuporteTecnico.java
+        └── Especialista.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Classe Chamado</h3>
+        <pre><code>public class Chamado {
+    private String descricao;
+
+    public Chamado(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+}</code></pre>
+
+        <h3>Classe abstrata Responsavel</h3>
+        <pre><code>public abstract class Responsavel {
+    protected Responsavel proximo;
+
+    public void setProximo(Responsavel proximo) {
+        this.proximo = proximo;
+    }
+
+    public abstract void tratarChamado(Chamado chamado);
+}</code></pre>
+
+        <h3>Classe Atendente</h3>
+        <pre><code>public class Atendente extends Responsavel {
+    public void tratarChamado(Chamado chamado) {
+        if (chamado.getDescricao().toLowerCase().contains("senha")) {
+            System.out.println("Atendente resolveu: " + chamado.getDescricao());
+        } else if (proximo != null) {
+            proximo.tratarChamado(chamado);
+        }
+    }
+}</code></pre>
+
+        <h3>Classe SuporteTecnico</h3>
+        <pre><code>public class SuporteTecnico extends Responsavel {
+    public void tratarChamado(Chamado chamado) {
+        if (chamado.getDescricao().toLowerCase().contains("conectar")) {
+            System.out.println("Suporte Técnico resolveu: " + chamado.getDescricao());
+        } else if (proximo != null) {
+            proximo.tratarChamado(chamado);
+        }
+    }
+}</code></pre>
+
+        <h3>Classe Especialista</h3>
+        <pre><code>public class Especialista extends Responsavel {
+    public void tratarChamado(Chamado chamado) {
+        System.out.println("Especialista resolveu: " + chamado.getDescricao());
+    }
+}</code></pre>
+
+        <h3>Classe Main</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Responsavel atendente = new Atendente();
+        Responsavel suporte = new SuporteTecnico();
+        Responsavel especialista = new Especialista();
+
+        atendente.setProximo(suporte);
+        suporte.setProximo(especialista);
+
+        Chamado c1 = new Chamado("Esqueci minha senha");
+        Chamado c2 = new Chamado("Não consigo conectar ao sistema");
+        Chamado c3 = new Chamado("Erro crítico no banco de dados");
+
+        atendente.tratarChamado(c1);
+        atendente.tratarChamado(c2);
+        atendente.tratarChamado(c3);
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código</h2>
+        <div class="box">
+            <ul>
+                <li><strong>Chamado:</strong> Representa uma solicitação do cliente, com uma descrição do problema.</li>
+                <li><strong>Responsavel:</strong> Classe base que define o método <code>tratarChamado()</code> e referencia o próximo da cadeia.</li>
+                <li><strong>Atendente:</strong> Resolve problemas simples como "senha". Se não resolver, encaminha.</li>
+                <li><strong>Suporte Técnico:</strong> Resolve problemas técnicos como "conexão". Caso contrário, encaminha.</li>
+                <li><strong>Especialista:</strong> Sempre resolve o que chegar, pois está no final da cadeia.</li>
+                <li><strong>Main:</strong> Cria a cadeia e testa o tratamento de três chamados diferentes.</li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Chain of Responsibility</h2>
+        <div class="box">
+            <ul>
+                <li>📦 Desacopla o remetente do receptor.</li>
+                <li>🔀 Permite adicionar ou reorganizar os responsáveis com facilidade.</li>
+                <li>🧩 Segue o princípio de responsabilidade única.</li>
+                <li>🧵 Pode tornar o código mais limpo e extensível.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>❗ Se ninguém tratar a requisição, ela pode ser ignorada silenciosamente.</li>
+                <li>🔁 Longas cadeias podem afetar a performance ou dificultar o rastreamento.</li>
+                <li>🧪 Pode ser difícil de testar em cenários complexos.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Chain of Responsibility</strong> é ideal para situações onde uma ação pode ser tratada por vários responsáveis,
+            um de cada vez.<br><br>
+            No exemplo do suporte técnico, mostramos como <strong>delegar tarefas de forma elegante</strong>, sem acoplamento rígido
+            entre o cliente e os tratadores.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Chain of Responsibility • 2025</p>
+    </footer>
+
+</body>
+
+</html>

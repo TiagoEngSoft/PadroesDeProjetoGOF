@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entendendo o Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #ff9800;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #ff9800;
+            margin-top: 40px;
+        }
+
+        .box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .exemplo {
+            background: #fff3e0;
+            border-left: 5px solid #ffb74d;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🧱 Entendendo o Padrão Builder</h1>
+        <p>Um exemplo simples e didático com Pessoa e Endereço</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Builder (GOF)</h2>
+        <div class="box">
+            Builder é um padrão de projeto criacional que <strong>separa a construção de um objeto complexo da sua
+                representação</strong>, permitindo criar diferentes representações usando o mesmo processo de
+            construção.
+        </div>
+
+        <h2>🤔 O que é Builder de forma simples?</h2>
+        <div class="box">
+            É uma forma organizada de criar objetos passo a passo, especialmente quando o construtor ficaria muito
+            grande ou confuso.
+        </div>
+
+        <h2>💡 Exemplo prático</h2>
+        <p>Vamos construir objetos do tipo <strong>Pessoa</strong>, que possuem:</p>
+        <ul>
+            <li>Nome</li>
+            <li>Idade</li>
+            <li>Endereço (rua + cidade)</li>
+        </ul>
+
+        <div class="exemplo">
+            Em vez de usar um construtor com muitos parâmetros, usamos um <code>PersonBuilder</code> para montar o
+            objeto passo a passo.
+        </div>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+&lt;PROJETO&gt;
+│
+├── src/
+│   ├── builder/
+│   │   └── PersonBuilder.java
+│   ├── modelos/
+│   │   ├── Endereco.java
+│   │   └── Pessoa.java
+│   └── app/
+│       └── Main.java
+    </code></pre>
+
+        <h2>🧪 Exemplo de Código</h2>
+
+        <h3>1. Classe Pessoa</h3>
+        <pre><code>public class Pessoa {
+    private String nome;
+    private int idade;
+    private Endereco endereco;
+
+    public Pessoa(String nome, int idade, Endereco endereco) {
+        this.nome = nome;
+        this.idade = idade;
+        this.endereco = endereco;
+    }
+
+    @Override
+    public String toString() {
+        return nome + " (" + idade + " anos), Endereço: " + endereco;
+    }
+}</code></pre>
+
+        <h3>2. Builder para Pessoa</h3>
+        <pre><code>public class PersonBuilder {
+    private String nome;
+    private int idade;
+    private Endereco endereco;
+
+    public PersonBuilder setNome(String nome) {
+        this.nome = nome;
+        return this;
+    }
+
+    public PersonBuilder setIdade(int idade) {
+        this.idade = idade;
+        return this;
+    }
+
+    public PersonBuilder setEndereco(String rua, String cidade) {
+        this.endereco = new Endereco(rua, cidade);
+        return this;
+    }
+
+    public Pessoa build() {
+        return new Pessoa(nome, idade, endereco);
+    }
+}</code></pre>
+
+        <h3>3. Código do Cliente</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Pessoa pessoa = new PersonBuilder()
+            .setNome("Carlos")
+            .setIdade(40)
+            .setEndereco("Av. Brasil", "São Paulo")
+            .build();
+
+        System.out.println("Pessoa criada via Builder:");
+        System.out.println(pessoa);
+    }
+}</code></pre>
+
+        <h2>✅ Por que usar o padrão Builder?</h2>
+        <div class="box">
+            <ul>
+                <li>📦 Evita construtores com muitos parâmetros.</li>
+                <li>🔍 Torna o código mais legível e fácil de manter.</li>
+                <li>🔄 Permite reutilizar o processo de construção para objetos diferentes.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O Builder é ideal quando você quer montar objetos complexos passo a passo, mantendo clareza e flexibilidade
+            no código.
+        </div>
+    </main>
+
+    <footer>
+        <p>Tiago Santos • Padrões de Projeto em Java • Builder • 2025</p>
+    </footer>
+
+</body>
+
+</html>
