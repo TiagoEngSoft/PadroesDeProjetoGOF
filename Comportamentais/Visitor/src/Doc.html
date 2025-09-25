@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Padrão Visitor — Visitando Objetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #673ab7;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #673ab7;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #673ab7;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>👁️‍🗨️ Padrão de Projeto: Visitor</h1>
+        <p>Separar algoritmos de objetos para adicionar operações sem alterar suas classes</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Visitor (GOF)</h2>
+        <div class="box">
+            <strong>Visitor</strong> é um padrão comportamental que permite definir uma nova operação sem mudar as
+            classes dos objetos sobre os quais opera.
+            Ele desacopla o algoritmo dos objetos visitados, facilitando a adição de novas funcionalidades.
+        </div>
+
+        <h2>🤔 O que é o Visitor de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem vários tipos de objetos diferentes, como Pessoas e Empresas.<br /><br />
+            Quer executar operações sobre eles (por exemplo, imprimir detalhes), mas sem modificar suas classes
+            originais.<br /><br />
+            O <strong>Visitor</strong> permite criar "visitantes" que passam por esses objetos e realizam ações
+            específicas para cada tipo, mantendo as classes limpas e focadas em seus dados.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Visitando Pessoas e Empresas</h2>
+        <ul>
+            <li><strong>Elemento (interface):</strong> Define o método <code>aceitar(Visitor visitor)</code> para
+                aceitar visitantes.</li>
+            <li><strong>Pessoa e Empresa:</strong> Implementam <code>Elemento</code> e permitem que visitantes realizem
+                operações específicas.</li>
+            <li><strong>Visitor (interface):</strong> Declara métodos para visitar cada tipo de elemento.</li>
+            <li><strong>ImpressaoVisitor:</strong> Implementa a interface <code>Visitor</code>, imprimindo detalhes dos
+                objetos.</li>
+            <li><strong>Main:</strong> Cria elementos e um visitor, e aplica a operação a cada elemento.</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── visitor/
+│   ├── Elemento.java
+│   ├── Pessoa.java
+│   ├── Empresa.java
+│   ├── Visitor.java
+│   └── ImpressaoVisitor.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Elemento</h3>
+        <pre><code>package visitor;
+
+// Elemento que aceita visitantes
+public interface Elemento {
+    void aceitar(Visitor visitor);
+}
+</code></pre>
+
+        <h3>Classe Pessoa</h3>
+        <pre><code>package visitor;
+
+public class Pessoa implements Elemento {
+    private String nome;
+    private int idade;
+
+    public Pessoa(String nome, int idade) {
+        this.nome = nome;
+        this.idade = idade;
+    }
+
+    public String getNome() { return nome; }
+    public int getIdade() { return idade; }
+
+    @Override
+    public void aceitar(Visitor visitor) {
+        visitor.visitarPessoa(this);
+    }
+}
+</code></pre>
+
+        <h3>Classe Empresa</h3>
+        <pre><code>package visitor;
+
+public class Empresa implements Elemento {
+    private String nome;
+    private int funcionarios;
+
+    public Empresa(String nome, int funcionarios) {
+        this.nome = nome;
+        this.funcionarios = funcionarios;
+    }
+
+    public String getNome() { return nome; }
+    public int getFuncionarios() { return funcionarios; }
+
+    @Override
+    public void aceitar(Visitor visitor) {
+        visitor.visitarEmpresa(this);
+    }
+}
+</code></pre>
+
+        <h3>Interface Visitor</h3>
+        <pre><code>package visitor;
+
+// Interface Visitor declara métodos para visitar tipos diferentes
+public interface Visitor {
+    void visitarPessoa(Pessoa pessoa);
+    void visitarEmpresa(Empresa empresa);
+}
+</code></pre>
+
+        <h3>Implementação ImpressaoVisitor</h3>
+        <pre><code>package visitor;
+
+public class ImpressaoVisitor implements Visitor {
+
+    @Override
+    public void visitarPessoa(Pessoa pessoa) {
+        System.out.println("Visitando Pessoa: " + pessoa.getNome() + ", idade: " + pessoa.getIdade());
+    }
+
+    @Override
+    public void visitarEmpresa(Empresa empresa) {
+        System.out.println("Visitando Empresa: " + empresa.getNome() + ", funcionários: " + empresa.getFuncionarios());
+    }
+}
+</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>import visitor.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Elemento[] elementos = {
+            new Pessoa("Alice", 30),
+            new Empresa("OpenAI", 500)
+        };
+
+        Visitor visitor = new ImpressaoVisitor();
+
+        for (Elemento e : elementos) {
+            e.aceitar(visitor);
+        }
+    }
+}
+</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li><strong>1️⃣ Interface Elemento:</strong> Define um método <code>aceitar(Visitor visitor)</code>.
+                    Isso permite que um visitante seja “aceito” e aplique operações ao objeto.</li>
+
+                <li><strong>2️⃣ Classes Concretas (Pessoa, Empresa):</strong> Implementam <code>Elemento</code> e dentro
+                    do método <code>aceitar</code> chamam o método apropriado do visitor, passando <em>this</em> (a si
+                    mesmo).</li>
+
+                <li><strong>3️⃣ Interface Visitor:</strong> Declara um método para visitar cada tipo de elemento,
+                    garantindo que a operação correta será chamada.</li>
+
+                <li><strong>4️⃣ ImpressaoVisitor:</strong> Implementa o visitor e define a operação que será feita para
+                    cada tipo — no caso, imprimir detalhes no console.</li>
+
+                <li><strong>5️⃣ Main:</strong> Cria elementos e um visitor. Para cada elemento, chama
+                    <code>aceitar(visitor)</code>, que executa a operação apropriada sem que os elementos precisem
+                    conhecer os detalhes da operação.</li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Visitor</h2>
+        <div class="box">
+            <ul>
+                <li>🔹 Permite adicionar novas operações sem alterar as classes dos elementos.</li>
+                <li>🔹 Mantém a lógica separada dos dados, melhorando organização.</li>
+                <li>🔹 Facilita adicionar funcionalidades a objetos complexos com muitos tipos.</li>
+                <li>🔹 Ajuda a cumprir o princípio aberto-fechado (Open/Closed Principle).</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode ser complicado adicionar novos tipos de elementos, pois a interface Visitor deve ser
+                    atualizada.</li>
+                <li>⚠️ Se os elementos mudarem com frequência, o padrão pode se tornar difícil de manter.</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Visitor</strong> é muito útil para adicionar operações complexas a objetos heterogêneos,
+            sem modificar suas classes originais.<br /><br />
+            Ele separa claramente os dados da lógica, promovendo código organizado e extensível, ideal para sistemas que
+            precisam evoluir com novas funcionalidades sem quebrar o código existente.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Visitor • 2025</p>
+    </footer>
+</body>
+
+</html>

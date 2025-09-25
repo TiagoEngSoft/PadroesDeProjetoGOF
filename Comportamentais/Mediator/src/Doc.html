@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Mediator — Formulário Interativo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3F51B5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3F51B5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3F51B5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🧩 Padrão de Projeto: Mediator</h1>
+        <p>Coordenando a comunicação entre componentes de forma desacoplada</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Mediator (GOF)</h2>
+        <div class="box">
+            <strong>Mediator</strong> é um padrão de projeto comportamental que permite reduzir o acoplamento entre
+            objetos. Ele centraliza a comunicação entre componentes através de um objeto mediador.
+        </div>
+
+        <h2>🤔 O que é o Mediator de forma simples?</h2>
+        <div class="box">
+            Imagine uma interface gráfica com campos de entrada e botões. Normalmente, os componentes precisam saber o
+            que os outros fazem para reagir.<br><br>
+            Com o <strong>Mediator</strong>, você <strong>tira a responsabilidade dos componentes</strong> e coloca
+            tudo em um "coordenador" central. Isso deixa o código mais limpo, organizado e fácil de manter.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Formulário de Cadastro</h2>
+        <ul>
+            <li><strong>TextBox:</strong> Campo de e-mail</li>
+            <li><strong>CheckBox:</strong> Aceitar termos</li>
+            <li><strong>Button:</strong> Botão de enviar</li>
+            <li><strong>FormMediator:</strong> Controla quando o botão deve ser ativado</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── mediator/
+│   └── Mediator.java
+│   └── FormMediator.java
+├── components/
+│   ├── Component.java
+│   ├── TextBox.java
+│   ├── CheckBox.java
+│   └── Button.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Interface Component</h3>
+        <pre><code>public interface Component {
+    void setMediator(Mediator mediator);
+    String getName();
+}</code></pre>
+
+        <h3>TextBox.java</h3>
+        <pre><code>public class TextBox implements Component {
+    private Mediator mediator;
+    private String text = "";
+
+    public void setText(String text) {
+        this.text = text;
+        mediator.notify(this, "textChanged");
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
+    public String getName() {
+        return "TextBox";
+    }
+}</code></pre>
+
+        <h3>CheckBox.java</h3>
+        <pre><code>public class CheckBox implements Component {
+    private Mediator mediator;
+    private boolean checked = false;
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+        mediator.notify(this, "checkChanged");
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
+    public String getName() {
+        return "CheckBox";
+    }
+}</code></pre>
+
+        <h3>Button.java</h3>
+        <pre><code>public class Button implements Component {
+    private Mediator mediator;
+    private boolean enabled = false;
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        System.out.println("Botão agora está " + (enabled ? "ATIVADO" : "DESATIVADO"));
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
+    public String getName() {
+        return "Button";
+    }
+}</code></pre>
+
+        <h3>Mediator.java</h3>
+        <pre><code>public interface Mediator {
+    void notify(Component sender, String event);
+}</code></pre>
+
+        <h3>FormMediator.java</h3>
+        <pre><code>public class FormMediator implements Mediator {
+    private TextBox textBox;
+    private CheckBox checkBox;
+    private Button button;
+
+    public void setComponents(TextBox textBox, CheckBox checkBox, Button button) {
+        this.textBox = textBox;
+        this.checkBox = checkBox;
+        this.button = button;
+
+        textBox.setMediator(this);
+        checkBox.setMediator(this);
+        button.setMediator(this);
+    }
+
+    @Override
+    public void notify(Component sender, String event) {
+        boolean emailOk = textBox.getText().contains("@");
+        boolean aceitou = checkBox.isChecked();
+        button.setEnabled(emailOk && aceitou);
+    }
+}</code></pre>
+
+        <h3>Main.java</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        TextBox email = new TextBox();
+        CheckBox termos = new CheckBox();
+        Button enviar = new Button();
+
+        FormMediator mediator = new FormMediator();
+        mediator.setComponents(email, termos, enviar);
+
+        System.out.println("Usuário digita email inválido:");
+        email.setText("emailinvalido");
+
+        System.out.println("\\nUsuário aceita os termos:");
+        termos.setChecked(true);
+
+        System.out.println("\\nUsuário corrige o email:");
+        email.setText("usuario@exemplo.com");
+
+        System.out.println("\\nUsuário desmarca os termos:");
+        termos.setChecked(false);
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li><strong>📩 TextBox:</strong> envia evento quando o texto muda</li>
+                <li><strong>✅ CheckBox:</strong> envia evento quando o estado muda</li>
+                <li><strong>🚦 Button:</strong> só é ativado se as condições forem cumpridas</li>
+                <li><strong>🧠 FormMediator:</strong> recebe os eventos e decide se ativa o botão</li>
+                <li><strong>📤 Comunicação:</strong> nenhum componente conhece os outros — só o mediador!</li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Mediator</h2>
+        <div class="box">
+            <ul>
+                <li>🔁 Reduz o acoplamento entre componentes</li>
+                <li>🧠 Centraliza a lógica de controle</li>
+                <li>🧩 Facilita manutenção e testes</li>
+                <li>🎯 Torna componentes reutilizáveis</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>📍 Mediador pode crescer demais se não for bem modularizado</li>
+                <li>📌 Requer cuidado para manter a clareza da lógica centralizada</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Mediator</strong> é ideal para sistemas onde muitos componentes precisam se comunicar sem
+            criar dependências diretas.<br><br>
+            No nosso exemplo, ao invés de cada campo verificar o estado dos outros, o mediador assume essa
+            responsabilidade — deixando os componentes simples e reutilizáveis.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Mediator • 2025</p>
+    </footer>
+</body>
+
+</html>

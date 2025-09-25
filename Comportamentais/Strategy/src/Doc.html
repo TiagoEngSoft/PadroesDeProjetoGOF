@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Strategy — Estratégias de Desconto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #607D8B;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #607D8B;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #607D8B;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎯 Padrão de Projeto: Strategy</h1>
+        <p>Troca dinâmica de algoritmo (ou “estratégia”) para resolver um problema</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Strategy (GOF)</h2>
+        <div class="box">
+            O padrão <strong>Strategy</strong> define uma família de algoritmos (estratégias),
+            encapsula cada um deles e os torna intercambiáveis.
+            Strategy permite que algoritmos variem independentemente dos clientes que os utilizam.
+        </div>
+
+        <h2>🤔 Explicação simples</h2>
+        <div class="box">
+            Imagine uma loja online. Para cada cliente, você pode aplicar diferentes tipos de desconto:
+            <ul>
+                <li>Sem desconto</li>
+                <li>Desconto fixo de 10%</li>
+                <li>Desconto fixo de 25%</li>
+            </ul>
+            Em vez de usar `if` ou `switch` para cada tipo de desconto no pedido, você seta uma “estratégia de desconto”
+            e o pedido usa essa estratégia para calcular o valor final. Isso torna o código flexível e extensível.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Estratégias de Desconto</h2>
+        <ul>
+            <li><strong>DescontoStrategy:</strong> interface comum para todas as estratégias</li>
+            <li><strong>DescontoFixo:</strong> aplica um percentual fixo de desconto</li>
+            <li><strong>SemDesconto:</strong> não aplica desconto (estratégia padrão)</li>
+            <li><strong>Pedido:</strong> classe que contém um preço e uma estratégia de desconto</li>
+            <li><strong>Main:</strong> uso prático trocando estratégias</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── strategy/
+│   ├── DescontoStrategy.java
+│   ├── DescontoFixo.java
+│   ├── SemDesconto.java
+│   └── Pedido.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>DescontoStrategy.java</h3>
+        <pre><code>package strategy;
+
+public interface DescontoStrategy {
+    double calcular(double precoOriginal);
+}</code></pre>
+
+        <h3>DescontoFixo.java</h3>
+        <pre><code>package strategy;
+
+public class DescontoFixo implements DescontoStrategy {
+    private double percentual;
+
+    public DescontoFixo(double percentual) {
+        this.percentual = percentual;
+    }
+
+    @Override
+    public double calcular(double precoOriginal) {
+        return precoOriginal * (1 - percentual);
+    }
+}</code></pre>
+
+        <h3>SemDesconto.java</h3>
+        <pre><code>package strategy;
+
+public class SemDesconto implements DescontoStrategy {
+    @Override
+    public double calcular(double precoOriginal) {
+        return precoOriginal;
+    }
+}</code></pre>
+
+        <h3>Pedido.java</h3>
+        <pre><code>package strategy;
+
+public class Pedido {
+    private double precoOriginal;
+    private DescontoStrategy estrategia;
+
+    public Pedido(double precoOriginal, DescontoStrategy estrategia) {
+        this.precoOriginal = precoOriginal;
+        this.estrategia = estrategia;
+    }
+
+    public double getPrecoFinal() {
+        return estrategia.calcular(precoOriginal);
+    }
+
+    public void setEstrategia(DescontoStrategy novaEstrategia) {
+        this.estrategia = novaEstrategia;
+    }
+}</code></pre>
+
+        <h3>Main.java</h3>
+        <pre><code>import strategy.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Pedido pedido = new Pedido(100.0, new SemDesconto());
+
+        System.out.println("🧾 Preço original: R$100.00");
+        System.out.println("🔸 Sem desconto: R$" + pedido.getPrecoFinal());
+
+        pedido.setEstrategia(new DescontoFixo(0.1));
+        System.out.println("🔸 Desconto de 10%: R$" + pedido.getPrecoFinal());
+
+        pedido.setEstrategia(new DescontoFixo(0.25));
+        System.out.println("🔸 Desconto de 25%: R$" + pedido.getPrecoFinal());
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <p>Agora vamos dissecar cada parte do código para você **entender exatamente o que acontece**:</p>
+
+            <ul>
+                <li>
+                    <strong>🔍 DescontoStrategy (interface):</strong><br>
+                    Essa interface define o método que toda estratégia de desconto deve implementar:
+                    <code>double calcular(double precoOriginal)</code>.<br>
+                    Isso garante que qualquer classe que implemente **DescontoStrategy** poderá ser usada de forma
+                    intercambiável.
+                </li>
+                <br>
+                <li>
+                    <strong>💵 DescontoFixo:</strong><br>
+                    - Recebe um valor `percentual` no construtor (por exemplo, 0,10 para 10%).<br>
+                    - No método `calcular()`, ele aplica: `preçoOriginal * (1 - percentual)`.<br>
+                    Ou seja, se o percentual for 0,10 (10%), ele retorna 90% do valor original.<br>
+                    Isso representa uma lógica de desconto fixa configurável.
+                </li>
+                <br>
+                <li>
+                    <strong>🚫 SemDesconto:</strong><br>
+                    - Esta estratégia não aplica desconto algum.<br>
+                    - O método `calcular()` simplesmente retorna `precoOriginal`.<br>
+                    É útil como estratégia padrão ou “fallback” quando nenhum desconto deve ser aplicado.
+                </li>
+                <br>
+                <li>
+                    <strong>🛒 Pedido:</strong><br>
+                    Essa classe representa o cliente (o “contexto”) que usa uma estratégia de desconto.<br>
+                    - **atributos**:
+                    <ul>
+                        <li><code>precoOriginal</code>: o valor sem desconto</li>
+                        <li><code>estrategia</code>: a estratégia atual aplicada</li>
+                    </ul>
+                    - **método `getPrecoFinal()`:** delega para a estratégia atual fazer o cálculo.<br>
+                    - **método `setEstrategia(...)`:** permite trocar a estratégia de desconto em tempo de execução.
+                </li>
+                <br>
+                <li>
+                    <strong>🚀 Main.java:</strong><br>
+                    Aqui fazemos testes práticos:<br>
+                    1. Criamos um pedido com valor 100, usando `SemDesconto` como estratégia inicial.<br>
+                    2. Imprimimos o valor (100, sem desconto).<br>
+                    3. Depois mudamos a estratégia para `DescontoFixo(0.1)` — desconto de 10% — e mostramos o valor
+                    (90).<br>
+                    4. Por fim, trocamos para `DescontoFixo(0.25)` — desconto de 25% — e mostramdo (75).<br>
+                    Observe que em nenhum momento usamos `if` ou `switch` para aplicar o desconto. O pedido delega tudo
+                    à estratégia escolhida.
+                </li>
+            </ul>
+
+            <p><em>Resumo visual:</em></p>
+            <ul>
+                <li>Cliente (<code>Pedido</code>) → invoca <code>getPrecoFinal()</code></li>
+                <li>Pedido → delega <code>calcular()</code> para a estratégia configurada</li>
+                <li>Estratégia → execução específica do cálculo</li>
+                <li>Podemos trocar estratégia durante a execução com <code>setEstrategia(...)</code></li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Strategy</h2>
+        <div class="box">
+            <ul>
+                <li>🔄 Código mais flexível — estratégias podem ser alteradas em tempo de execução</li>
+                <li>🧩 Segregação de responsabilidades — cada cálculo de desconto fica em sua classe</li>
+                <li>🛠 Facilita adicionar novas estratégias sem mexer no código existente (princípio Open/Closed)</li>
+                <li>🔁 Evita estruturas condicionais pesadas</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>📂 Muitas classes se existirem muitas estratégias</li>
+                <li>🧪 Teste bem as estratégias e as trocas em tempo de execução</li>
+                <li>⚠️ Certifique-se de que a interface das estratégias é genérica e útil</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Strategy</strong> nos dá uma forma elegante de selecionar algoritmos comportamentais
+            dinamicamente.<br><br>
+            No nosso exemplo de descontos, ele nos permite trocar a forma de cálculo facilmente e com pouco acoplamento
+            — ideal para sistemas que precisam ser expansíveis e flexíveis.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Strategy • 2025</p>
+    </footer>
+</body>
+
+</html>

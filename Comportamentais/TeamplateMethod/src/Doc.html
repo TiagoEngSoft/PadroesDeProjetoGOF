@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Padrão Template Method — Processo de Relatórios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #4a90e2;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #4a90e2;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>📋 Padrão de Projeto: Template Method</h1>
+        <p>Define o esqueleto de um algoritmo, deixando alguns passos para as subclasses implementarem</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Template Method (GOF)</h2>
+        <div class="box">
+            <strong>Template Method</strong> é um padrão comportamental que define o esqueleto de um algoritmo numa
+            operação, adiando alguns passos para subclasses. Ele permite que subclasses redefinam certos passos de um
+            algoritmo sem mudar sua estrutura.
+        </div>
+
+        <h2>🤔 O que é o Template Method de forma simples?</h2>
+        <div class="box">
+            Imagine que você tem um processo que deve ser sempre executado na mesma ordem, como gerar um
+            relatório.<br /><br />
+            O padrão <strong>Template Method</strong> ajuda a fixar essa ordem (sequência de passos), mas deixa que cada
+            tipo de relatório implemente os detalhes específicos de como coletar e formatar os dados.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Processo de Relatório</h2>
+        <ul>
+            <li><strong>Relatorio (classe abstrata):</strong> Define o método template <code>gerarRelatorio()</code> que
+                controla a sequência.</li>
+            <li><strong>RelatorioVendas:</strong> Implementa os passos para coletar e formatar dados de vendas.</li>
+            <li><strong>RelatorioEstoque:</strong> Implementa os passos para coletar e formatar dados de estoque.</li>
+            <li><strong>Main:</strong> Testa os relatórios, executando o método template.</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── template_method/
+│   ├── Relatorio.java
+│   ├── RelatorioVendas.java
+│   └── RelatorioEstoque.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Classe abstrata Relatorio</h3>
+        <pre><code>package template_method;
+
+// Classe abstrata com o método template
+public abstract class Relatorio {
+
+    // Método template: define a sequência de passos
+    public final void gerarRelatorio() {
+        coletarDados();
+        formatarDados();
+        imprimirRelatorio();
+        salvarRelatorio();
+    }
+
+    // Passos que podem variar entre os relatórios
+    protected abstract void coletarDados();
+    protected abstract void formatarDados();
+
+    // Passos fixos para todos os relatórios
+    private void imprimirRelatorio() {
+        System.out.println("Imprimindo relatório...");
+    }
+
+    private void salvarRelatorio() {
+        System.out.println("Salvando relatório no disco.");
+    }
+}
+</code></pre>
+
+        <h3>Classe RelatorioVendas</h3>
+        <pre><code>package template_method;
+
+public class RelatorioVendas extends Relatorio {
+
+    @Override
+    protected void coletarDados() {
+        System.out.println("Coletando dados de vendas do sistema.");
+    }
+
+    @Override
+    protected void formatarDados() {
+        System.out.println("Formatando dados de vendas para relatório.");
+    }
+}
+</code></pre>
+
+        <h3>Classe RelatorioEstoque</h3>
+        <pre><code>package template_method;
+
+public class RelatorioEstoque extends Relatorio {
+
+    @Override
+    protected void coletarDados() {
+        System.out.println("Coletando dados de estoque do sistema.");
+    }
+
+    @Override
+    protected void formatarDados() {
+        System.out.println("Formatando dados de estoque para relatório.");
+    }
+}
+</code></pre>
+
+        <h3>Classe Main (Teste)</h3>
+        <pre><code>import template_method.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Relatorio relatorioVendas = new RelatorioVendas();
+        Relatorio relatorioEstoque = new RelatorioEstoque();
+
+        System.out.println("Gerando relatório de vendas:");
+        relatorioVendas.gerarRelatorio();
+
+        System.out.println("\nGerando relatório de estoque:");
+        relatorioEstoque.gerarRelatorio();
+    }
+}
+</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li><strong>1️⃣ Método Template (<code>gerarRelatorio()</code>):</strong> É o coração do padrão. Ele
+                    define a ordem fixa dos passos do algoritmo — coletar dados, formatar, imprimir e salvar. Esse
+                    método é <code>final</code> para garantir que a sequência não seja alterada pelas subclasses.</li>
+
+                <li><strong>2️⃣ Passos Abstratos (<code>coletarDados()</code> e <code>formatarDados()</code>):</strong>
+                    São métodos que as subclasses devem implementar, pois cada tipo de relatório coleta e formata os
+                    dados de maneira diferente. Isso permite personalização sem mudar a estrutura geral.</li>
+
+                <li><strong>3️⃣ Passos Concretos (<code>imprimirRelatorio()</code> e
+                        <code>salvarRelatorio()</code>):</strong> São implementados na classe base, porque sua lógica é
+                    comum para todos os relatórios. Isso evita duplicação e mantém o controle centralizado.</li>
+
+                <li><strong>4️⃣ Subclasses (RelatorioVendas e RelatorioEstoque):</strong> Implementam os detalhes
+                    específicos de coleta e formatação, seguindo o contrato definido pelo método template. Elas não
+                    precisam se preocupar com a ordem dos passos, apenas com a implementação dos detalhes.</li>
+
+                <li><strong>5️⃣ Main:</strong> Demonstra o uso do padrão criando instâncias das subclasses e chamando o
+                    método template, que executa o algoritmo completo.</li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Template Method</h2>
+        <div class="box">
+            <ul>
+                <li>🔹 Garante uma sequência fixa de passos em um algoritmo.</li>
+                <li>🔹 Facilita a reutilização de código comum.</li>
+                <li>🔹 Permite personalizar partes específicas do algoritmo sem alterar sua estrutura.</li>
+                <li>🔹 Ajuda a manter o código organizado e claro.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Evite que o método template se torne muito complexo, dificultando manutenção.</li>
+                <li>⚠️ Nem todos os passos precisam ser abstratos; avalie o que faz sentido compartilhar ou customizar.
+                </li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Template Method</strong> é uma poderosa técnica para controlar a ordem de execução de um
+            algoritmo,
+            garantindo consistência e permitindo que subclasses personalizem os detalhes.<br /><br />
+            Em nosso exemplo, o processo de geração de relatórios segue uma estrutura fixa, enquanto as subclasses
+            definem como coletar e formatar os dados específicos, promovendo organização, reutilização e flexibilidade.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Template Method • 2025</p>
+    </footer>
+</body>
+
+</html>

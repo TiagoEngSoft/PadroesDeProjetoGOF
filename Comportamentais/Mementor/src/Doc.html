@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Memento — Editor de Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #673AB7;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #673AB7;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #673AB7;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>📝 Padrão de Projeto: Memento</h1>
+        <p>Salvando e restaurando o estado de objetos (como um CTRL+Z!)</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão Memento (GOF)</h2>
+        <div class="box">
+            O padrão <strong>Memento</strong> permite capturar e armazenar o estado interno de um objeto
+            para que ele possa ser restaurado mais tarde, sem violar o encapsulamento.
+        </div>
+
+        <h2>🤔 Explicando de forma simples</h2>
+        <div class="box">
+            Imagine um editor de texto que você usa no computador.<br>
+            A cada alteração importante, ele salva o estado atual para que você possa <strong>desfazer (CTRL+Z)</strong>
+            se algo der errado.<br><br>
+            Com o padrão <strong>Memento</strong>, podemos implementar esse comportamento de forma limpa e sem
+            misturar responsabilidades.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Editor de Texto com Desfazer</h2>
+        <ul>
+            <li><strong>Editor:</strong> Onde o texto é escrito</li>
+            <li><strong>EditorMemento:</strong> Armazena o estado do texto</li>
+            <li><strong>History:</strong> Guarda todos os estados salvos</li>
+            <li><strong>Main:</strong> Simula uso real com "escrever" e "desfazer"</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── editor/
+│   ├── Editor.java
+│   ├── EditorMemento.java
+│   └── History.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Editor.java</h3>
+        <pre><code>public class Editor {
+    private String texto = "";
+
+    public void escrever(String novoTexto) {
+        texto += novoTexto;
+        System.out.println("Texto atual: " + texto);
+    }
+
+    public EditorMemento salvar() {
+        return new EditorMemento(texto);
+    }
+
+    public void restaurar(EditorMemento memento) {
+        texto = memento.getTextoSalvo();
+        System.out.println("Texto restaurado: " + texto);
+    }
+}
+</code></pre>
+
+        <h3>EditorMemento.java</h3>
+        <pre><code>public class EditorMemento {
+    private final String textoSalvo;
+
+    public EditorMemento(String texto) {
+        this.textoSalvo = texto;
+    }
+
+    public String getTextoSalvo() {
+        return textoSalvo;
+    }
+}
+</code></pre>
+
+        <h3>History.java</h3>
+        <pre><code>import java.util.Stack;
+
+public class History {
+    private Stack&lt;EditorMemento&gt; historico = new Stack<>();
+
+    public void salvarEstado(EditorMemento memento) {
+        historico.push(memento);
+    }
+
+    public EditorMemento desfazer() {
+        return historico.pop();
+    }
+
+    public boolean temHistorico() {
+        return !historico.isEmpty();
+    }
+}
+</code></pre>
+
+        <h3>Main.java</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        Editor editor = new Editor();
+        History history = new History();
+
+        editor.escrever("Olá, ");
+        history.salvarEstado(editor.salvar());
+
+        editor.escrever("mundo!");
+        history.salvarEstado(editor.salvar());
+
+        editor.escrever(" Isso será desfeito...");
+
+        if (history.temHistorico()) {
+            editor.restaurar(history.desfazer());
+        }
+
+        if (history.temHistorico()) {
+            editor.restaurar(history.desfazer());
+        }
+    }
+}
+</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <p>Vamos entender como cada parte se encaixa:</p>
+
+            <ul>
+                <li>
+                    <strong>✍️ Editor.java:</strong><br>
+                    É onde o usuário digita o texto. Ele tem 3 responsabilidades principais:
+                    <ul>
+                        <li><strong>escrever(...):</strong> adiciona novo texto</li>
+                        <li><strong>salvar():</strong> cria um <code>EditorMemento</code> com o texto atual</li>
+                        <li><strong>restaurar(memento):</strong> recupera o texto salvo anteriormente</li>
+                    </ul>
+                    Pense no Editor como o "bloco de notas" real.
+                </li>
+                <br>
+
+                <li>
+                    <strong>📸 EditorMemento.java:</strong><br>
+                    É como tirar uma <strong>foto do texto atual</strong> para guardar. Ele não deixa alterar o conteúdo
+                    salvo — isso garante que o estado fique intacto e protegido.
+                    <br>Ou seja, é o "snapshot" congelado do que foi escrito até aquele momento.
+                </li>
+                <br>
+
+                <li>
+                    <strong>📚 History.java:</strong><br>
+                    É o responsável por <strong>armazenar os estados anteriores</strong>. Ele funciona como uma pilha
+                    (Stack):
+                    <ul>
+                        <li>Você vai salvando estados ao longo do tempo</li>
+                        <li>Quando quiser desfazer, ele devolve o último</li>
+                    </ul>
+                    Como no <strong>CTRL+Z</strong>: o último estado salvo é o primeiro a ser restaurado.
+                </li>
+                <br>
+
+                <li>
+                    <strong>🚀 Main.java:</strong><br>
+                    Aqui temos a simulação prática:
+                    <ul>
+                        <li>Escrevemos "Olá, "</li>
+                        <li>Salvamos esse estado</li>
+                        <li>Escrevemos "mundo!" e salvamos novamente</li>
+                        <li>Depois escrevemos mais algo, mas sem salvar</li>
+                        <li>Chamamos <code>desfazer()</code> duas vezes e restauramos os dois últimos estados salvos
+                        </li>
+                    </ul>
+                    No final, o texto volta para o que era antes da última escrita.
+                </li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Memento</h2>
+        <div class="box">
+            <ul>
+                <li>📂 Permite desfazer mudanças com facilidade</li>
+                <li>🔒 Mantém o encapsulamento dos objetos</li>
+                <li>🧘 Organiza a lógica de backup/restauração em classes separadas</li>
+                <li>♻️ Funciona bem em editores, jogos, formulários e sistemas com histórico</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>🧠 Mementos podem consumir muita memória se armazenarem estados grandes</li>
+                <li>💾 É preciso gerenciar bem o histórico (limpeza, limites etc.)</li>
+                <li>📏 Ideal para estados "simples", pois o controle manual pode ser verboso</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Memento</strong> é como um "salvamento rápido" do seu programa.
+            <br><br>
+            Você tira uma foto do estado atual, guarda essa foto e pode voltar a ela depois — sem precisar
+            reescrever o código nem misturar responsabilidades. É uma forma elegante de implementar "desfazer",
+            "restaurar", "rollback", entre outros comportamentos do mundo real.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Memento • 2025</p>
+    </footer>
+</body>
+
+</html>

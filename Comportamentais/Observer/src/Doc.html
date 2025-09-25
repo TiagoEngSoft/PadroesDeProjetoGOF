@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão Observer — Estação Meteorológica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #ff5722;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #ff5722;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #ff5722;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🌦️ Padrão de Projeto: Observer</h1>
+        <p>Notificando múltiplos objetos automaticamente ao mudar o estado</p>
+    </header>
+
+    <main>
+
+        <h2>✅ Definição formal do padrão Observer (GOF)</h2>
+        <div class="box">
+            O padrão <strong>Observer</strong> define uma dependência um-para-muitos entre objetos,
+            de modo que quando um objeto muda de estado, todos os seus dependentes são notificados automaticamente.
+        </div>
+
+        <h2>🤔 Explicando de forma simples</h2>
+        <div class="box">
+            Imagine uma <strong>estação meteorológica</strong> que mede a temperatura. Sempre que ela registra
+            uma nova temperatura, <strong>todos os painéis de exibição conectados devem atualizar o valor
+                mostrado</strong>.<br><br>
+            O padrão Observer faz exatamente isso: permite que múltiplos objetos "observem" um objeto central,
+            e sejam atualizados sempre que houver uma mudança.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Estação Meteorológica</h2>
+        <ul>
+            <li><strong>Subject:</strong> Interface para os objetos observados (a estação)</li>
+            <li><strong>Observer:</strong> Interface que todos os "observadores" devem implementar</li>
+            <li><strong>WeatherStation:</strong> A estação que notifica os observadores</li>
+            <li><strong>TemperatureDisplay:</strong> Um painel que exibe a temperatura</li>
+            <li><strong>Main:</strong> Simula o funcionamento</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── observer/
+│   ├── Subject.java
+│   ├── Observer.java
+│   ├── WeatherStation.java
+│   └── TemperatureDisplay.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>Subject.java</h3>
+        <pre><code>public interface Subject {
+    void registrarObserver(Observer o);
+    void removerObserver(Observer o);
+    void notificarObservers();
+}
+</code></pre>
+
+        <h3>Observer.java</h3>
+        <pre><code>public interface Observer {
+    void atualizar(float temperatura);
+}
+</code></pre>
+
+        <h3>WeatherStation.java</h3>
+        <pre><code>public class WeatherStation implements Subject {
+    private List&lt;Observer&gt; observers = new ArrayList<>();
+    private float temperatura;
+
+    public void registrarObserver(Observer o) {
+        observers.add(o);
+    }
+
+    public void removerObserver(Observer o) {
+        observers.remove(o);
+    }
+
+    public void notificarObservers() {
+        for (Observer o : observers) {
+            o.atualizar(temperatura);
+        }
+    }
+
+    public void setTemperatura(float novaTemperatura) {
+        this.temperatura = novaTemperatura;
+        notificarObservers();
+    }
+}
+</code></pre>
+
+        <h3>TemperatureDisplay.java</h3>
+        <pre><code>public class TemperatureDisplay implements Observer {
+    private String nome;
+
+    public TemperatureDisplay(String nome) {
+        this.nome = nome;
+    }
+
+    public void atualizar(float temperatura) {
+        System.out.println("[" + nome + "] Temperatura atualizada: " + temperatura + "°C");
+    }
+}
+</code></pre>
+
+        <h3>Main.java</h3>
+        <pre><code>public class Main {
+    public static void main(String[] args) {
+        WeatherStation estacao = new WeatherStation();
+
+        TemperatureDisplay tela1 = new TemperatureDisplay("Tela 1");
+        TemperatureDisplay tela2 = new TemperatureDisplay("Tela 2");
+
+        estacao.registrarObserver(tela1);
+        estacao.registrarObserver(tela2);
+
+        estacao.setTemperatura(25.0f);
+        estacao.setTemperatura(30.5f);
+
+        estacao.removerObserver(tela2);
+        estacao.setTemperatura(27.0f);
+    }
+}
+</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <p>Aqui vai a explicação detalhada, linha por linha:</p>
+
+            <ul>
+                <li>
+                    <strong>📡 Subject (interface):</strong><br>
+                    Define os métodos que qualquer objeto "observável" deve ter:
+                    <ul>
+                        <li><code>registrarObserver()</code> – adiciona um observador</li>
+                        <li><code>removerObserver()</code> – remove um observador</li>
+                        <li><code>notificarObservers()</code> – avisa todos os observadores sobre uma mudança</li>
+                    </ul>
+                    Serve como contrato: qualquer "sujeito" deve seguir essas regras.
+                </li>
+                <br>
+
+                <li>
+                    <strong>👁️ Observer (interface):</strong><br>
+                    Define o método que os observadores precisam implementar:
+                    <ul>
+                        <li><code>atualizar(temperatura)</code> – chamado sempre que o sujeito muda de estado</li>
+                    </ul>
+                    Isso garante que todos os "displays", "painéis", etc., saibam o que fazer quando forem avisados.
+                </li>
+                <br>
+
+                <li>
+                    <strong>🌡️ WeatherStation:</strong><br>
+                    Esta é a classe principal do sistema — o objeto observado.<br>
+                    Ela:
+                    <ul>
+                        <li>Armazena a lista de observadores</li>
+                        <li>Tem um método <code>setTemperatura()</code> que altera o estado</li>
+                        <li>Chama <code>notificarObservers()</code> toda vez que o valor é alterado</li>
+                    </ul>
+                    Ou seja, sempre que a temperatura muda, todos os observadores são informados automaticamente.
+                </li>
+                <br>
+
+                <li>
+                    <strong>📺 TemperatureDisplay:</strong><br>
+                    É um observador que implementa o método <code>atualizar()</code>.<br>
+                    Quando a estação avisa, ele mostra a nova temperatura.
+                    <br>
+                    Você pode criar quantos displays quiser — todos vão receber as atualizações.
+                </li>
+                <br>
+
+                <li>
+                    <strong>🚀 Main.java:</strong><br>
+                    É onde tudo acontece:
+                    <ul>
+                        <li>Criamos a estação meteorológica</li>
+                        <li>Registramos duas "telas de exibição"</li>
+                        <li>Alteramos a temperatura 3 vezes</li>
+                        <li>Removemos uma tela antes da última atualização</li>
+                    </ul>
+                    Observe que apenas as telas registradas são notificadas.
+                </li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do Observer</h2>
+        <div class="box">
+            <ul>
+                <li>🔄 Atualizações automáticas sem acoplamento entre objetos</li>
+                <li>👥 Suporte fácil a múltiplos assinantes (observers)</li>
+                <li>🧱 Estrutura modular e escalável</li>
+                <li>🔔 Excelente para interfaces gráficas, sistemas de eventos, notificações etc.</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode haver muitos observers — gerencie com cuidado</li>
+                <li>🌀 Loops infinitos podem ocorrer se um observer alterar o sujeito</li>
+                <li>🧪 Testes devem cobrir os fluxos de notificação</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>Observer</strong> separa claramente quem emite os dados (sujeito)
+            de quem os consome (observadores).<br><br>
+            Isso permite notificações em tempo real e sistemas reativos — tudo sem depender diretamente de quem está
+            observando.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • Observer • 2025</p>
+    </footer>
+</body>
+
+</html>

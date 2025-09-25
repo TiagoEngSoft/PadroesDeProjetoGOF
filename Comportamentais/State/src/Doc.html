@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Padrão State — Botão Play/Pause</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #3f51b5;
+            margin-top: 40px;
+        }
+
+        .box {
+            background: #f1f1f1;
+            border-left: 6px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🔁 Padrão de Projeto: State</h1>
+        <p>Mudando o comportamento de um objeto dinamicamente</p>
+    </header>
+
+    <main>
+        <h2>✅ Definição formal do padrão State (GOF)</h2>
+        <div class="box">
+            O padrão <strong>State</strong> permite que um objeto altere seu comportamento
+            quando seu estado interno muda, parecendo que ele mudou de classe.
+        </div>
+
+        <h2>🤔 Explicação simples</h2>
+        <div class="box">
+            Imagine um botão de play/pause de música.<br>
+            Quando a música está tocando e você pressiona o botão, ela deve pausar.<br>
+            Se estiver pausada e você pressionar novamente, ela deve tocar.<br><br>
+            Com o padrão State, cada comportamento é isolado em uma classe e o objeto muda de estado dinamicamente.
+        </div>
+
+        <h2>💡 Nosso Exemplo: Botão Play/Pause</h2>
+        <ul>
+            <li><strong>State:</strong> Interface que define o método <code>pressionarBotao()</code></li>
+            <li><strong>PlayingState:</strong> Estado que representa quando a música está tocando</li>
+            <li><strong>PausedState:</strong> Estado que representa quando a música está pausada</li>
+            <li><strong>PlayerContext:</strong> O contexto (botão) que muda seu comportamento de acordo com o estado
+            </li>
+            <li><strong>Main:</strong> Testa o botão mudando entre os estados</li>
+        </ul>
+
+        <h2>📦 Estrutura do Projeto</h2>
+        <pre><code>
+src/
+├── state/
+│   ├── State.java
+│   ├── PlayingState.java
+│   ├── PausedState.java
+│   └── PlayerContext.java
+└── Main.java
+        </code></pre>
+
+        <h2>🧪 Código Exemplo</h2>
+
+        <h3>State.java</h3>
+        <pre><code>package state;
+
+public interface State {
+    void pressionarBotao(PlayerContext context);
+}</code></pre>
+
+        <h3>PlayingState.java</h3>
+        <pre><code>package state;
+
+public class PlayingState implements State {
+    @Override
+    public void pressionarBotao(PlayerContext context) {
+        System.out.println("⏸️ Pausando música...");
+        context.setState(new PausedState());
+    }
+}</code></pre>
+
+        <h3>PausedState.java</h3>
+        <pre><code>package state;
+
+public class PausedState implements State {
+    @Override
+    public void pressionarBotao(PlayerContext context) {
+        System.out.println("▶️ Retomando música...");
+        context.setState(new PlayingState());
+    }
+}</code></pre>
+
+        <h3>PlayerContext.java</h3>
+        <pre><code>package state;
+
+public class PlayerContext {
+    private State estadoAtual;
+
+    public PlayerContext() {
+        this.estadoAtual = new PausedState(); // começa pausado
+    }
+
+    public void setState(State novoEstado) {
+        this.estadoAtual = novoEstado;
+    }
+
+    public void pressionarBotao() {
+        estadoAtual.pressionarBotao(this);
+    }
+}</code></pre>
+
+        <h3>Main.java</h3>
+        <pre><code>import state.*;
+
+public class Main {
+    public static void main(String[] args) {
+        PlayerContext player = new PlayerContext();
+
+        System.out.println("🎵 Simulador de botão Play/Pause:\n");
+
+        player.pressionarBotao(); // ▶️
+        player.pressionarBotao(); // ⏸️
+        player.pressionarBotao(); // ▶️
+    }
+}</code></pre>
+
+        <h2>🧠 Explicando o Código Passo a Passo</h2>
+        <div class="box">
+            <ul>
+                <li>
+                    <strong>🧩 State (interface):</strong><br>
+                    Define o contrato que todos os estados devem seguir. Neste caso, o método:
+                    <code>pressionarBotao(PlayerContext context)</code><br>
+                    Isso força todos os estados a saber o que fazer quando o botão for pressionado.
+                </li><br>
+
+                <li>
+                    <strong>▶️ PlayingState:</strong><br>
+                    Representa o estado onde a música está tocando.<br>
+                    Ao pressionar o botão neste estado, ele exibe "⏸️ Pausando música..." e altera o estado do contexto
+                    para <code>PausedState</code>.
+                </li><br>
+
+                <li>
+                    <strong>⏸️ PausedState:</strong><br>
+                    Representa o estado onde a música está pausada.<br>
+                    Ao pressionar o botão neste estado, ele exibe "▶️ Retomando música..." e muda o estado para
+                    <code>PlayingState</code>.
+                </li><br>
+
+                <li>
+                    <strong>🎮 PlayerContext:</strong><br>
+                    É o objeto principal que muda de comportamento conforme o estado.<br>
+                    Ele tem:
+                    <ul>
+                        <li>Um atributo <code>State estadoAtual</code></li>
+                        <li>Um método <code>pressionarBotao()</code> que delega a ação ao estado atual</li>
+                        <li>Um método <code>setState()</code> para mudar o estado internamente</li>
+                    </ul>
+                    O segredo está no fato de que o <strong>contexto nunca sabe diretamente o que fazer</strong> — ele
+                    apenas delega para o estado.
+                </li><br>
+
+                <li>
+                    <strong>🚀 Main.java:</strong><br>
+                    Cria o contexto e pressiona o botão 3 vezes.<br>
+                    O comportamento muda automaticamente:
+                    <ul>
+                        <li>1ª vez: Estava pausado → começa a tocar</li>
+                        <li>2ª vez: Estava tocando → pausa</li>
+                        <li>3ª vez: Estava pausado → toca novamente</li>
+                    </ul>
+                    O código mostra como o comportamento muda sem usar <code>if</code> ou <code>switch</code> — tudo
+                    graças à troca de objetos de estado.
+                </li>
+            </ul>
+        </div>
+
+        <h2>✅ Benefícios do State</h2>
+        <div class="box">
+            <ul>
+                <li>🔄 Permite alterar o comportamento de um objeto em tempo de execução</li>
+                <li>📦 Encapsula cada comportamento em uma classe separada</li>
+                <li>♻️ Evita estruturas grandes de <code>if</code>/<code>switch</code></li>
+                <li>🧱 Segue o princípio de responsabilidade única</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Cuidados</h2>
+        <div class="box">
+            <ul>
+                <li>⚠️ Pode gerar muitas classes se houver muitos estados</li>
+                <li>⚠️ Muita troca de estados mal controlada pode causar bugs</li>
+            </ul>
+        </div>
+
+        <h2>📌 Conclusão</h2>
+        <div class="box">
+            O padrão <strong>State</strong> permite que objetos mudem de comportamento de forma elegante e
+            organizada.<br><br>
+            Em vez de usar condicionais para tudo, cada estado sabe o que fazer, tornando o sistema mais coeso,
+            reutilizável e fácil de expandir.
+        </div>
+    </main>
+
+    <footer>
+        <p>Padrões de Projeto em Java • State • 2025</p>
+    </footer>
+</body>
+
+</html>
